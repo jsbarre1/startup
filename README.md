@@ -2,61 +2,74 @@
 
 [My Notes](notes.md)
 
-A brief description of the application here. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-
-> [!NOTE]
->  This is a template for your startup application. You must modify this `README.md` file for each phase of your development. You only need to fill in the section for each deliverable when that deliverable is submitted in Canvas. Without completing the section for a deliverable, the TA will not know what to look for when grading your submission. Feel free to add additional information to each deliverable description, but make sure you at least have the list of rubric items and a description of what you did for each item.
-
-> [!NOTE]
->  If you are not familiar with Markdown then you should review the [documentation](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) before continuing.
+Welcome to Budge-It, a user-friendly application meant to help you track and reduce your spending. Budge-it makes it fun by letting you compete against your peers based on how close you followed your Budge-It and how much money you saved.
 
 ## 🚀 Specification Deliverable
 
 > [!NOTE]
->  Fill in this sections as the submission artifact for this deliverable. You can refer to this [example](https://github.com/webprogramming260/startup-example/blob/main/README.md) for inspiration.
+> Fill in this sections as the submission artifact for this deliverable. You can refer to this [example](https://github.com/webprogramming260/startup-example/blob/main/README.md) for inspiration.
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] Proper use of Markdown
-- [ ] A concise and compelling elevator pitch
-- [ ] Description of key features
-- [ ] Description of how you will use each technology
-- [ ] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
+- [x] Proper use of Markdown
+- [x] A concise and compelling elevator pitch
+- [x] Description of key features
+- [x] Description of how you will use each technology
+- [x] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
 
 ### Elevator pitch
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Have you or a loved one ever spent too much money? Bought something you didn't need? Well you are in luck! This user-friendly application is all you need to get excited about budgeting and keep yourself accountable to your budget. Welcome to Budge-It!
 
 ### Design
 
-![Design image](placeholder.png)
+![Design image](budge-it-homepage.png)
+![Design image](budge-it-leaderboard.png)
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Here is a sequence diagram that shows how the leaderboard will be updated
 
 ```mermaid
 sequenceDiagram
-    actor You
-    actor Website
-    You->>Website: Replace this with your design
+    actor Friend_1
+    actor Friend_2
+    actor Friend_3
+    actor Server
+    Friend_1->>Server: Scored 1000 Points
+    Server->>Friend_2: Friend_1 Scored 1000 Points
+    Server->>Friend_3: Friend_1 Scored 1000 Points
+    Friend_2->>Server: Scored 1500 Points
+    Server->>Friend_3: Friend_2 Scored 1500 Points
+    Server->>Friend_1: Friend_2 Scored 1500 Points
 ```
 
 ### Key features
 
-- Describe your key feature
-- Describe your key feature
-- Describe your key feature
+- Secure login over HTTPS
+- Edit your budget once every month
+- Track your transactions and income
+- Display budget/transaction data 
+- Keeps track of money saved
+- Provides a daily/weekly recommended spending
+- Score points based on how well you did versus your budget
+- Global leaderboard
+- Real-time leaderboard updates
 
 ### Technologies
 
 I am going to use the required technologies in the following ways.
 
-- **HTML** - Description here
-- **CSS** - Description here
-- **React** - Description here
-- **Service** - Description here
-- **DB/Login** - Description here
-- **WebSocket** - Description here
+- **HTML** - Used correct HTML structure for application. Three HTML pages. One for login, one for personal budget, one for the leaderboard
+- **CSS** - Application styling that responds to different screen sizes, used good whitespace, color choice, and contrast.
+- **React** - Provides login, budget displays, leaderboard displays, adding transactions, and routing between pages
+- **Service** - Backend service with endpoints for: 
+    - login 
+    - retrieving scores 
+    - submiting score updates 
+    - submitting transaction data 
+    - retrieving transaction data 
+    - logout
+- **DB/Login** - Stores users, tranactions, and scores int the database. Register and login users. Credentials securely stored in database. Can't add transactions unless authenticated. Can view leaderboard if not logged in.
+- **WebSocket** - As each user gains points through tracking their spending and following their budget, the gained points are broadcast to all other users for the leaderboard
 
 ## 🚀 AWS deliverable
 
