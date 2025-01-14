@@ -2,7 +2,7 @@
 
 [My Notes](notes.md)
 
-Welcome to Budge-It, a user-friendly application meant to help you track and reduce your spending. Budge-it makes it fun by letting you compete against your peers based on how close you followed your Budge-It and how much money you saved.
+Welcome to Budge-It, a user-friendly application meant to help you track and reduce your spending. Budge-it makes it fun by letting you compete against your peers based on how close you followed your Budge-It, and how well you did tracking your spending.
 
 ## 🚀 Specification Deliverable
 
