@@ -78,15 +78,15 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [x] **HTML pages** 
-- [x] **Proper HTML element usage** 
-- [x] **Links** 
-- [x] **Text** 
-- [x] **3rd party API placeholder** 
-- [x] **Images** 
-- [x] **Login placeholder** 
-- [x] **DB data placeholder** 
-- [x] **WebSocket placeholder** 
+- [x] **HTML pages** - three HTML pages representing login, budget, and leaderboard.
+- [x] **Proper HTML element usage** - used all the required elements described in the spec. 
+- [x] **Links** - links to each html page in each of the html pages.
+- [x] **Text** - text describing recent transactions and leaderboard entries.
+- [x] **3rd party API placeholder** - placeholder for when someone scores points a random sound from a random sound api will go off.
+- [x] **Images** - placeholder images for the pie chart and the bar graph.
+- [x] **Login placeholder** - Login placeholder in index.html
+- [x] **DB data placeholder** - Recent transactions represent database data.
+- [x] **WebSocket placeholder** - Leaderboard entries and recent scorers represent WebSocket data.
 
 ## 🚀 CSS deliverable
 
