@@ -105,3 +105,7 @@ The key is to be in the directory with the deployFiles.sh file or else it will s
 Example:
 ./startup/simon-html/deployFiles.sh -k ./production.pem -h budgeitnow.com -s simon
 
+
+## HTML
+
+I thought it was cool how tables work and how it automatically adjust the table based on how much data you put in each row and table data row.
