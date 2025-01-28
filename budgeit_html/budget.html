@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Tell browsers not to scale the viewport automatically -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BudgeIt</title>
+    <link rel="icon" href="favicon.ico" />
+  </head>
+  <body>
+    <!-- Use header, main, and footer elements to give semantic structure -->
+    <header>
+      <h1>BudgeIt<sup>&reg;</sup></h1>
+
+      <!-- Navigation elements -->
+      <nav>
+        <!-- Menu is a semantic alternative to <ul> that represents an interaction -->
+        <menu>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="budget.html">Budget</a></li>
+          <li><a href="leaderboard.html">Leaderboard</a></li>
+        </menu>
+      </nav>
+
+      <!-- Since we don't have the ability to style we use old style HTML to give some visual formatting -->
+      <hr />
+    </header>
+
+    <main>
+      <div>
+        <form method="get" action="">
+          <div>
+            <input type="date" placeholder="your@email.com" />
+            <input type="number" placeholder="amount" />
+            <select>
+              <option value="income">income</option>
+              <option value="grocery">grocery</option>
+              <option value="gas">gas</option>
+              <option value="school">school</option>
+              <option value="doctor">doctor</option>
+              <option value="fast food">fast food</option>
+              <option value="car maintanence">car maintanence</option>
+            </select>
+            <button type="submit">add</button>
+          </div>
+        </form>
+      </div>
+    <!--example data-->
+    <div class="recent-transactions">
+        
+        <div>
+            <span>12/31/2024</span>
+            <span>$24.35</span>
+            <span>gas</span>
+          </div>
+          <div>
+            <span>1/05/2025</span>
+            <span>$68.54</span>
+            <span>grocery</span>
+          </div>
+          <div>
+            <span>1/12/2025</span>
+            <span>$243.65</span>
+            <span>doctor</span>
+          </div>
+        </main>
+    
+
+    </div>
+      
+    <footer>
+      <hr />
+      <span class="text-reset">Author Name(s)</span>
+      <br />
+      <a href="https://github.com/webprogramming260/simon-html">GitHub</a>
+    </footer>
+  </body>
+</html>

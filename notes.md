@@ -97,3 +97,11 @@ Handling the toggling of the checkboxes was particularly interesting.
   ))}
 </div>
 ```
+
+## Deploying Code
+
+The key is to be in the directory with the deployFiles.sh file or else it will send all the files in the directory you are in.
+
+Example:
+./startup/simon-html/deployFiles.sh -k ./production.pem -h budgeitnow.com -s simon
+
