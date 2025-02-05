@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Tell browsers not to scale the viewport automatically -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BudgeIt</title>
+    <link rel="icon" href="favicon.ico" />
+  </head>
+  <body>
+    <!-- Use header, main, and footer elements to give semantic structure -->
+    <header>
+      <h1>BudgeIt<sup>&reg;</sup></h1>
+
+      <!-- Navigation elements -->
+      <nav>
+        <!-- Menu is a semantic alternative to <ul> that represents an interaction -->
+        <menu>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="budget.html">Budget</a></li>
+          <li><a href="leaderboard.html">Leaderboard</a></li>
+        </menu>
+      </nav>
+
+      <!-- Since we don't have the ability to style we use old style HTML to give some visual formatting -->
+      <hr />
+    </header>
+
+    <main>
+        <h1>Welcome (username) to your BudgeIt!</h1>
+
+        <div><button>edit plan</button></div>
+      <div>
+        <form method="get" action="">
+          <div>
+            <input type="date" placeholder="your@email.com" />
+            <input type="number" step=".01" placeholder="amount" />
+            <select aria-placeholder="category">
+              <option value="income">income</option>
+              <option value="grocery">grocery</option>
+              <option value="gas">gas</option>
+              <option value="school">school</option>
+              <option value="doctor">doctor</option>
+              <option value="fast food">fast food</option>
+              <option value="car maintanence">car maintanence</option>
+            </select>
+            <button type="submit">add</button>
+          </div>
+        </form>
+      </div>
+    <!--example data-->
+    </br>
+    <div>
+        <img src="./pie_chart_placeholder.png" alt="pie chart placeholder">
+        <img src="./bar_graph_placeholder.png" alt="bar graph placeholder">
+    </div>
+    <div class="recent-transactions">
+        Recent:
+        <table>
+            <tbody>
+              <tr>
+                <td>12/31/2024</td>
+                <td>$24.35</td>
+                <td>gas</td>
+              </tr>
+              <tr>
+                <td>1/05/2025</td>
+                <td>$68.54</td>
+                <td>grocery</td>
+              </tr>
+              <tr>
+                <td>1/12/2025</td>
+                <td>$243.65</td>
+                <td>doctor</td>
+              </tr>
+            </tbody>
+        </table>
+        </main>
+    
+
+    </div>
+      
+    <footer>
+      <hr />
+      <span class="text-reset">John Barrett</span>
+      <br />
+      <a href="https://github.com/jsbarre1/startup">GitHub</a>
+    </footer>
+  </body>
+</html>
