@@ -11,40 +11,42 @@
   </head>
   <body>
     <header>
-      <h1 class="bg-blue-600 text-center">BudgeIt<sup>&reg;</sup></h1>
 
-      <nav>
-        <menu class="flex flex-row justify-between justify-items-center">
-          <a class="bg-blue-400 w-full text-center" href="index.html">Home</a>
-          <a class="bg-blue-400 w-full text-center" href="budget.html">MyBudget</a>
-          <a class="bg-blue-400 w-full text-center" href="leaderboard.html" >Leaderboard</a>
+      <nav class="fixed">
+        <menu class="flex flex-row w-screen justify-between justify-items-center">
+          <a class="bg-blue-400 hover:bg-red-300 w-full text-center" href="index.html">Home</a>
+          <a class="bg-blue-400 hover:bg-red-300 w-full text-center" href="budget.html">MyBudget</a>
+          <a class="bg-blue-400 hover:bg-red-300 w-full text-center" href="leaderboard.html" >Leaderboard</a>
         </menu>
       </nav>
 
       <hr />
     </header>
 
-    <main>
-      <h1>Welcome to BudgeIt</h1>
+    <main class="flex flex-col pt-6 w-full justify-center">
+      <h1 class="text-center">Welcome to BudgeIt</h1>
       <form method="get" action="budget.html">
-        <div>
-          <input type="text" placeholder="your@email.com" />
+        <div class="flex w-full justify-center">
+          <input class="mt-4 align-middle text-center rounded-2xl lg:w-[400px] w-[200px] ring-2 ring-blue-400" type="text" placeholder="your@email.com" />
         </div>
         </br>
-        <div>
-          <input type="password" placeholder="password" />
+        <div class="flex w-full justify-center">
+          <input class=" text-center ring-2 rounded-2xl lg:w-[400px] w-[200px] ring-blue-400" type="password" placeholder="password" />
         </div>
         </br>
-        <button type="submit">Login</button>
-        <button type="submit">Create</button>
+        <div class="flex flex-row justify-center">
+          <button class="p-2 w-[100px] lg:w-[200px] rounded-3xl bg-blue-500 text-white" type="submit">Login</button>
+        <button class="p-2 w-[100px] lg:w-[200px] ml-2 rounded-3xl bg-gray-500 text-white" type="submit">Create</button>
+        </div>
+        
       </form>
     </main>
 
-    <footer>
+    <foote class="flex w-full">
       <hr />
-      <span class="text-reset">John Barrett</span>
+      <span class="w-full text-center">John Barrett</span>
       <br />
-      <a href="https://github.com/jsbarre1/startup">GitHub</a>
+      <a class="w-full text-center" href="https://github.com/jsbarre1/startup">GitHub</a>
     </footer>
   </body>
 </html>
