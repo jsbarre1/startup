@@ -829,6 +829,11 @@
       }
     }
   }
+  .md\:w-\[800px\] {
+    @media (width >= 48rem) {
+      width: 800px;
+    }
+  }
   .lg\:w-\[100px\] {
     @media (width >= 64rem) {
       width: 100px;
@@ -842,6 +847,16 @@
   .lg\:w-\[400px\] {
     @media (width >= 64rem) {
       width: 400px;
+    }
+  }
+  .lg\:w-\[800px\] {
+    @media (width >= 64rem) {
+      width: 800px;
+    }
+  }
+  .lg\:w-\[1000px\] {
+    @media (width >= 64rem) {
+      width: 1000px;
     }
   }
   .lg\:w-\[210000px\] {
