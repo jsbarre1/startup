@@ -27,13 +27,13 @@
     <main class="pt-6">
       <h1 class="text-center">Welcome (username) to MyBudget!</h1>
 
-        <div><button>edit plan</button></div>
-      <div>
+        <div><button class="p-1 w-[80px] lg:w-[100px] rounded-3xl bg-blue-500 text-white text-xs">edit plan</button></div>
+      <div class="pt-2">
         <form method="get" action="">
-          <div>
-            <input type="date" placeholder="your@email.com" />
-            <input type="number" step=".01" placeholder="amount" />
-            <select aria-placeholder="category">
+          <div class="flex flex-row ring-2 ring-blue-400 bg-blue-400 justify-evenly rounded-xl">
+            <input class="bg-white text-center rounded-2xl text-sm w-[110px] lg:w-[200px]" type="date"/>
+            <input class="bg-white text-center rounded-2xl text-sm w-[110px] lg:w-[200px]" type="number" step=".01" placeholder="amount" />
+            <select class="bg-white text-center rounded-2xl text-sm w-[110px] lg:w-[200px]" aria-placeholder="category">
               <option value="income">income</option>
               <option value="grocery">grocery</option>
               <option value="gas">gas</option>
@@ -42,37 +42,33 @@
               <option value="fast food">fast food</option>
               <option value="car maintanence">car maintanence</option>
             </select>
-            <button type="submit">add</button>
+            <button class="bg-white rounded-2xl text-center text-sm w-[50px] lg:w-[100px]" type="submit">add</button>
           </div>
         </form>
       </div>
-    <!--example data-->
     </br>
-    <div>
+    <div class="flex flex-row">
         <img src="../media/pie_chart_placeholder.png" alt="pie chart placeholder">
         <img src="../media/bar_graph_placeholder.png" alt="bar graph placeholder">
     </div>
-    <div class="recent-transactions">
-        Recent:
-        <table>
-            <tbody>
-              <tr>
-                <td>12/31/2024</td>
-                <td>$24.35</td>
-                <td>gas</td>
-              </tr>
-              <tr>
-                <td>1/05/2025</td>
-                <td>$68.54</td>
-                <td>grocery</td>
-              </tr>
-              <tr>
-                <td>1/12/2025</td>
-                <td>$243.65</td>
-                <td>doctor</td>
-              </tr>
-            </tbody>
-        </table>
+    <div class="text-center">Recent:</div>
+    <div class="flex flex-col ring-2 ring-blue-400 bg-blue-400 rounded-xl">
+      <div class="flex flex-row justify-evenly">
+        <div class="bg-white text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">12/31/2024</div>
+        <div class="bg-white text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">$24.35</div>
+        <div class="bg-white text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">gas</div>
+      </div>
+      <div class="flex flex-row justify-evenly">
+        <div class="bg-white text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">01/05/2025</div>
+        <div class="bg-white text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">$65.35</div>
+        <div class="bg-white text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">grocery</div>
+      </div>
+      <div class="flex flex-row justify-evenly">
+        <div class="bg-white text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">01/20/25</div>
+        <div class="bg-white text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">$400.67</div>
+        <div class="bg-white text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">rent</div>
+       
+      </div>
         </main>
     
 
