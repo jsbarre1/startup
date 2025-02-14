@@ -9,45 +9,47 @@ export default function App() {
   return (
     <BrowserRouter>
       <div className="body bg-dark text-light">
-        <header className="container-fluid">
-          <nav className="navbar fixed-top navbar-dark">
-            <div className="navbar-brand">
-              Simon<sup>&reg;</sup>
+        <header>
+          <nav className="navbar fixed-top navbar-dark bg-dark">
+            <div className="container-fluid">
+              <a className="navbar-brand" href="#">
+                Simon<sup>&reg;</sup>
+              </a>
+              <ul className="navbar-nav flex-row">
+                <li className="nav-item px-2">
+                  <NavLink className="nav-link" to="">
+                    Login
+                  </NavLink>
+                </li>
+                <li className="nav-item px-2">
+                  <NavLink className="nav-link" to="play">
+                    Play
+                  </NavLink>
+                </li>
+                <li className="nav-item px-2">
+                  <NavLink className="nav-link" to="scores">
+                    Scores
+                  </NavLink>
+                </li>
+                <li className="nav-item px-2">
+                  <NavLink className="nav-link" to="about">
+                    About
+                  </NavLink>
+                </li>
+              </ul>
             </div>
-            <menu className="navbar-nav">
-              <li className="nav-item">
-                <NavLink className="nav-link" to="">
-                  Login
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink className="nav-link" to="play">
-                  Play
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink className="nav-link" to="scores">
-                  Scores
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink className="nav-link" to="about">
-                  About
-                </NavLink>
-              </li>
-            </menu>
           </nav>
         </header>
 
-        <main>App components go here</main>
-
-        <Routes>
-          <Route path="/" element={<Login />} exact />
-          <Route path="/play" element={<Play />} />
-          <Route path="/scores" element={<Scores />} />
-          <Route path="/about" element={<About />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <main className="container-fluid mt-5">
+          <Routes>
+            <Route path="/" element={<Login />} exact />
+            <Route path="/play" element={<Play />} />
+            <Route path="/scores" element={<Scores />} />
+            <Route path="/about" element={<About />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
 
         <footer className="bg-dark text-white-50">
           <div className="container-fluid">
@@ -62,12 +64,13 @@ export default function App() {
         </footer>
       </div>
     </BrowserRouter>
-
-    
   );
 }
 
 function NotFound() {
-  return <main className="container-fluid bg-secondary text-center">404: Return to sender. Address unknown.</main>;
+  return (
+    <main className="container-fluid bg-secondary text-center">
+      404: Return to sender. Address unknown.
+    </main>
+  );
 }
-
