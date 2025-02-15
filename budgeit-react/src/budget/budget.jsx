@@ -47,11 +47,11 @@ export function Budget() {
       <div class="flex flex-row self-center mt-4">
         <img
 
-          src="./public/pie_chart_placeholder.png"
+          src="../../public/pie_chart_placeholder.png"
           alt="pie chart placeholder"
         />
         <img
-          src="./public/bar_graph_placeholder.png"
+          src="../../public/bar_graph_placeholder.png"
           alt="bar graph placeholder"
         />
       </div>
