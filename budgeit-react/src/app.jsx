@@ -1,11 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter, NavLink, Route, Routes } from "react-router-dom";
 import { Budget } from "./budget/budget";
 import { Login } from "./login/login";
 import { Leaderboard } from "./leaderboard/leaderboard";
 import "./app.css";
+import { AuthState } from "./login/authState";
 
 export default function App() {
+
+  const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
+  const currentAuthState = userName ? AuthState.Authenticated : AuthState.Unauthenticated;
+  const [authState, setAuthState] = useState(currentAuthState);
+
   return (
     <BrowserRouter>
       <header>
