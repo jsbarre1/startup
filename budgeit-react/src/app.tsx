@@ -5,7 +5,7 @@ import { Login } from "./login/login";
 import { Leaderboard } from "./leaderboard/leaderboard";
 import "./app.css";
 
-enum AuthState {
+export enum AuthState {
   Authenticated,
   Unauthenticated,
 }
@@ -20,11 +20,15 @@ export default function App() {
     : AuthState.Unauthenticated;
   const [authState, setAuthState] = useState<AuthState>(currentAuthState);
 
+  const onAuthChange =(userName: string, authState: AuthState) => {
+    setAuthState(authState);
+    setUserName(userName);
+  }
   return (
     <BrowserRouter>
       <header>
-        <nav class="fixed">
-          <menu class="flex flex-row w-screen justify-between justify-items-center">
+        <nav className="fixed">
+          <menu className="flex flex-row w-screen justify-between justify-items-center">
             <NavLink
               className="bg-blue-500 hover:bg-red-300 w-full text-center"
               to=""
@@ -57,10 +61,7 @@ export default function App() {
               <Login
                 userName={userName}
                 authState={authState}
-                onAuthChange={(userName, authState) => {
-                  setAuthState(authState);
-                  setUserName(userName);
-                }}
+                onAuthChange={onAuthChange}
               />
             }
           />
@@ -70,12 +71,12 @@ export default function App() {
         </Routes>
       </main>
 
-      <footer class="flex w-full pt-2">
+      <footer className="flex w-full pt-2">
         <hr />
-        <span class="w-full text-center">John Barrett</span>
+        <span className="w-full text-center">John Barrett</span>
         <br />
         <a
-          class="w-full text-center"
+          className="w-full text-center"
           href="https://github.com/jsbarre1/startup"
         >
           GitHub

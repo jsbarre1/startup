@@ -1,20 +1,29 @@
 import React, { useState } from "react";
+import { AuthState } from "../app";
 
-export function Login({ userName, authState, onAuthChange }) {
-  const [inputUserName, setInputUserName] = useState<String>(userName || "");
+export function Login({
+  userName,
+  authState,
+  onAuthChange,
+}: {
+  userName: string;
+  authState: AuthState;
+  onAuthChange: (userName: string, authState: AuthState) => void;
+}) {
+  const [inputUserName, setInputUserName] = useState<string>(userName || "");
   const [password, setPassword] = useState("");
   const [displayError, setDisplayError] = useState(null);
 
-  async function loginUser(e) {
+  async function loginUser(e : React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
     localStorage.setItem("userName", inputUserName);
-    props.onLogin(inputUserName);
+    onAuthChange(inputUserName, AuthState.Authenticated);
   }
 
-  async function createUser(e) {
+  async function createUser(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
     localStorage.setItem("userName", inputUserName);
-    props.onLogin(inputUserName);
+    onAuthChange(inputUserName, AuthState.Authenticated);
   }
 
   return (
@@ -41,14 +50,14 @@ export function Login({ userName, authState, onAuthChange }) {
         </div>
         <div className="flex flex-row justify-center mt-2">
           <button
-            onClick={loginUser}
+            onClick={()=> loginUser}
             className="p-2 w-[100px] shadow-md lg:w-[200px] rounded-3xl bg-blue-500 text-white"
             type="button"
           >
             Login
           </button>
           <button
-            onClick={createUser}
+            onClick={() => createUser}
             className="p-2 w-[100px] shadow-md lg:w-[200px] ml-2 rounded-3xl bg-gray-500 text-white"
             type="button"
           >
