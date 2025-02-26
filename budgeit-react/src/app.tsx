@@ -20,53 +20,64 @@ export default function App() {
     : AuthState.Unauthenticated;
   const [authState, setAuthState] = useState<AuthState>(currentAuthState);
 
-  const onAuthChange =(userName: string, authState: AuthState) => {
+  const onAuthChange = (userName: string, authState: AuthState) => {
     setAuthState(authState);
     setUserName(userName);
-  }
+  };
   return (
     <BrowserRouter>
-      <header>
-        <nav className="fixed">
-          <menu className="flex flex-row w-screen justify-between justify-items-center">
-            <NavLink
-              className="bg-blue-500 hover:bg-red-300 w-full text-center"
-              to=""
-            >
-              Login
-            </NavLink>
-            <NavLink
-              className="bg-blue-500 hover:bg-red-300 w-full text-center"
-              to="budget"
-            >
-              Budget
-            </NavLink>
-            <NavLink
-              className="bg-blue-500 hover:bg-red-300 w-full text-center"
-              to="leaderboard"
-            >
-              Leaderboard
-            </NavLink>
-          </menu>
-        </nav>
+      {authState === AuthState.Authenticated ? (
+        <header>
+          <nav className="fixed">
+            <menu className="flex flex-row w-screen justify-between justify-items-center">
+              <NavLink
+                className="bg-blue-500 hover:bg-red-300 w-full text-center"
+                to="budget"
+              >
+                Budget
+              </NavLink>
+              <NavLink
+                className="bg-blue-500 hover:bg-red-300 w-full text-center"
+                to="leaderboard"
+              >
+                Leaderboard
+              </NavLink>
+              <button
+                onClick={() => {
+                  setAuthState(AuthState.Unauthenticated);
+                  setUserName("");
+                }}
+                className="bg-blue-500 hover:bg-red-300 w-full text-center"
+              >
+                Logout
+              </button>
+            </menu>
+          </nav>
 
-        <hr />
-      </header>
+          <hr />
+        </header>
+      ) : null}
 
       <main className="p-4">
         <Routes>
-          <Route
-            path="/"
-            element={
-              <Login
-                userName={userName}
-                authState={authState}
-                onAuthChange={onAuthChange}
-              />
-            }
-          />
-          <Route path="/budget" element={<Budget />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
+          {authState === AuthState.Unauthenticated ? (
+            <Route
+              path="/"
+              element={
+                <Login
+                  userName={userName}
+                  authState={authState}
+                  onAuthChange={onAuthChange}
+                />
+              }
+            />
+          ) : (
+            <>
+              <Route path="/" element={<Budget />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
+            </>
+          )}
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
