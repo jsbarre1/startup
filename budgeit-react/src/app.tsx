@@ -4,13 +4,21 @@ import { Budget } from "./budget/budget";
 import { Login } from "./login/login";
 import { Leaderboard } from "./leaderboard/leaderboard";
 import "./app.css";
-import { AuthState } from "./login/authState";
+
+enum AuthState {
+  Authenticated,
+  Unauthenticated,
+}
 
 export default function App() {
-
-  const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
-  const currentAuthState = userName ? AuthState.Authenticated : AuthState.Unauthenticated;
-  const [authState, setAuthState] = useState(currentAuthState);
+  const storedUserName = localStorage.getItem("userName");
+  const [userName, setUserName] = useState<string>(
+    storedUserName !== null ? storedUserName : ""
+  );
+  const currentAuthState = userName
+    ? AuthState.Authenticated
+    : AuthState.Unauthenticated;
+  const [authState, setAuthState] = useState<AuthState>(currentAuthState);
 
   return (
     <BrowserRouter>
@@ -43,7 +51,19 @@ export default function App() {
 
       <main className="p-4">
         <Routes>
-          <Route path="/" element={<Login />} exact />
+          <Route
+            path="/"
+            element={
+              <Login
+                userName={userName}
+                authState={authState}
+                onAuthChange={(userName, authState) => {
+                  setAuthState(authState);
+                  setUserName(userName);
+                }}
+              />
+            }
+          />
           <Route path="/budget" element={<Budget />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="*" element={<NotFound />} />

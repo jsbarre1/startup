@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 
-export function Login(props) {
-  const [userName, setUserName] = useState(props.userName || "");
+export function Login({ userName, authState, onAuthChange }) {
+  const [inputUserName, setInputUserName] = useState<String>(userName || "");
   const [password, setPassword] = useState("");
   const [displayError, setDisplayError] = useState(null);
 
   async function loginUser(e) {
     e.preventDefault();
-    localStorage.setItem("userName", userName);
-    props.onLogin(userName);
+    localStorage.setItem("userName", inputUserName);
+    props.onLogin(inputUserName);
   }
 
   async function createUser(e) {
     e.preventDefault();
-    localStorage.setItem("userName", userName);
-    props.onLogin(userName);
+    localStorage.setItem("userName", inputUserName);
+    props.onLogin(inputUserName);
   }
 
   return (
@@ -23,8 +23,8 @@ export function Login(props) {
       <form method="get" action="budget.html">
         <div className="flex w-full justify-center">
           <input
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
+            value={inputUserName}
+            onChange={(e) => setInputUserName(e.target.value)}
             className="mt-4 shadow-md align-middle text-center rounded-2xl lg:w-[400px] w-[200px] ring-2 ring-blue-400"
             type="text"
             placeholder="your@email.com"
