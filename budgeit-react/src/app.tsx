@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BrowserRouter, NavLink, Route, Routes } from "react-router-dom";
+import { BrowserRouter, NavLink, Route, Routes, useNavigate } from "react-router-dom";
 import { Budget } from "./budget/budget";
 import { Login } from "./login/login";
 import { Leaderboard } from "./leaderboard/leaderboard";
@@ -9,8 +9,8 @@ export enum AuthState {
   Authenticated,
   Unauthenticated,
 }
-
-export default function App() {
+function AppContent() {
+  const navigate = useNavigate();
   const storedUserName = localStorage.getItem("userName");
   const [userName, setUserName] = useState<string>(
     storedUserName !== null ? storedUserName : ""
@@ -24,8 +24,9 @@ export default function App() {
     setAuthState(authState);
     setUserName(userName);
   };
+
   return (
-    <BrowserRouter>
+    <>
       {authState === AuthState.Authenticated ? (
         <header>
           <nav className="fixed">
@@ -46,6 +47,7 @@ export default function App() {
                 onClick={() => {
                   setAuthState(AuthState.Unauthenticated);
                   setUserName("");
+                  navigate("/");
                 }}
                 className="bg-blue-500 hover:bg-red-300 w-full text-center"
               >
@@ -74,6 +76,7 @@ export default function App() {
           ) : (
             <>
               <Route path="/" element={<Budget userName={userName} />} />
+              <Route path="/budget" element={<Budget userName={userName} />} />
               <Route path="/leaderboard" element={<Leaderboard userName={userName} />} />
             </>
           )}
@@ -93,6 +96,14 @@ export default function App() {
           GitHub
         </a>
       </footer>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
     </BrowserRouter>
   );
 }
