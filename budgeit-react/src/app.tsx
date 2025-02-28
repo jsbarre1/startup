@@ -73,7 +73,7 @@ export default function App() {
             />
           ) : (
             <>
-              <Route path="/" element={<Budget />} />
+              <Route path="/" element={<Budget userName={userName} />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
             </>
           )}
