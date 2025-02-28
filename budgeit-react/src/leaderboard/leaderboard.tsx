@@ -1,6 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+interface LeaderBoard {
+  points: number
+  userName: string
+}
 
 export function Leaderboard() {
+  const sampleData: LeaderBoard[] = [
+    {
+      points: 15075,
+      userName: "James"
+    },{
+      points: 12075,
+      userName: "James"
+    },{
+      points: 13000,
+      userName: "Brock"
+    },{
+      points: 11000,
+      userName: "YourScore"
+    }
+  ];
+  const [leaderBoardData, setLeaderBoardData] = useState<LeaderBoard[]>(sampleData)
+
+
+  useEffect(() => {
+    const sortedData = [...leaderBoardData].sort((a, b) => b.points - a.points);
+    setLeaderBoardData(sortedData);
+  }, [leaderBoardData]);
   return (
     <main className="flex flex-col pt-6 w-full h-full justify-center">
       <div className="text-xs justify-center">
@@ -19,26 +46,14 @@ export function Leaderboard() {
       </div>
       <div className="flex flex-col bg-gray-200 self-center w-full md:w-[800px] rounded-lg shadow-md">
         <h1 className="flex justify-center text-center">Leaderboard</h1>
-        <div className="flex flex-row justify-evenly bg-blue-400 rounded-2xl shadow-md">
-          <div className="w-full text-center">1</div>
-          <div className="w-full text-center">James</div>
-          <div className="w-full text-center">15075</div>
+        {leaderBoardData.map((person, index)=>(
+          <div className="flex flex-row justify-evenly bg-blue-400 mb-1 rounded-2xl shadow-md">
+          <div className="w-full text-center">{index +1}</div>
+          <div className="w-full text-center">{person.userName}</div>
+          <div className="w-full text-center">{person.points}</div>
         </div>
-        <div className="flex flex-row justify-evenly bg-blue-400 rounded-2xl mt-1 shadow-md">
-          <div className="w-full text-center">2</div>
-          <div className="w-full text-center">Brock</div>
-          <div className="w-full text-center">13000</div>
-        </div>
-        <div className="flex flex-row justify-evenly bg-blue-400 rounded-2xl mt-1 shadow-md">
-          <div className="w-full text-center">3</div>
-          <div className="w-full text-center">Aliza</div>
-          <div className="w-full text-center">12075</div>
-        </div>
-        <div className="flex flex-row justify-evenly bg-blue-400 rounded-2xl mt-1 shadow-md">
-          <div className="w-full text-center">4</div>
-          <div className="w-full text-center">(Username)</div>
-          <div className="w-full text-center">11000</div>
-        </div>
+        ))}
+       
       </div>
     </main>
   );
