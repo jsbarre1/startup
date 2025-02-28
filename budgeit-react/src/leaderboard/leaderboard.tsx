@@ -5,7 +5,7 @@ interface LeaderBoard {
   userName: string
 }
 
-export function Leaderboard() {
+export function Leaderboard({ userName }: { userName: string }) {
   const sampleData: LeaderBoard[] = [
     {
       points: 15075,
@@ -18,7 +18,7 @@ export function Leaderboard() {
       userName: "Brock"
     },{
       points: 11000,
-      userName: "YourScore"
+      userName: userName
     }
   ];
   const [leaderBoardData, setLeaderBoardData] = useState<LeaderBoard[]>(sampleData)
