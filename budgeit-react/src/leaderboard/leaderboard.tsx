@@ -103,7 +103,7 @@ export function Leaderboard({ userName }: { userName: string }) {
         {notifications.map(notification => (
           <div 
             key={notification.id} 
-            className="bg-blue-300 text-center border border-white p-2 animate-fadeIn"
+            className="bg-blue-300 text-center border border-white"
           >
             {notification.userName} recently scored {notification.points} points!
           </div>
@@ -117,7 +117,7 @@ export function Leaderboard({ userName }: { userName: string }) {
       <div className="flex flex-col bg-gray-200 self-center w-full md:w-[800px] rounded-lg shadow-md">
         <h1 className="flex justify-center text-center">Leaderboard</h1>
         {leaderBoardData.map((person, index)=>(
-          <div className="flex flex-row justify-evenly bg-blue-400 mb-1 rounded-2xl shadow-md">
+          <div className={`flex flex-row justify-evenly ${person.userName === userName ? `border-yellow-400 border-2`: ``} bg-blue-400 mb-1 rounded-2xl shadow-md`}>
           <div className="w-full text-center">{index +1}</div>
           <div className="w-full text-center">{person.userName}</div>
           <div className="w-full text-center">{person.points}</div>
