@@ -1,4 +1,4 @@
-# Your startup name here
+#Welcome to BudgeIt
 
 [My Notes](notes.md)
 
