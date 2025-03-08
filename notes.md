@@ -109,3 +109,13 @@ Example:
 ## HTML
 
 I thought it was cool how tables work and how it automatically adjust the table based on how much data you put in each row and table data row.
+
+## CSS
+I liked how tailwind was easy to style things but I used a lot of the same code over and over. I wonder how I could refactor the code and maybe put the styles in the index.css file to make the code more maintainable
+
+## React Part One
+So cool to not have to redo the header each time since it was taken over by components and the router. I also liked learing more about npm.
+
+## React Part Two
+In react part two I learned a lot about state and how we can use different hooks to manipulate it. Specifically useEffect was fun to use since it fires after the each render depending on the dependecy matrix of the useEffect. It was also cool to use conditional rendering for the router to grant access to someone when they are authenticated and remove access if they became not authenticated .
+
