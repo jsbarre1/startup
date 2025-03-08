@@ -1,4 +1,4 @@
-#Welcome to BudgeIt
+# Welcome to BudgeIt
 
 [My Notes](notes.md)
 
