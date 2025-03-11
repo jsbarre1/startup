@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { BrowserRouter, NavLink, Route, Routes, useNavigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  NavLink,
+  Route,
+  Routes,
+  useNavigate,
+} from "react-router-dom";
 import { Budget } from "./budget/budget";
 import { Login } from "./login/login";
 import { Leaderboard } from "./leaderboard/leaderboard";
@@ -25,6 +31,21 @@ function AppContent() {
     setUserName(userName);
   };
 
+  const logout = () => {
+    fetch(`/api/auth/logout`, {
+      method: "delete",
+    })
+      .catch(() => {
+        // Logout failed. Assuming offline
+      })
+      .finally(() => {
+        localStorage.removeItem("userName");
+        setAuthState(AuthState.Unauthenticated);
+        setUserName("");
+        navigate("/");
+      });
+  };
+
   return (
     <>
       {authState === AuthState.Authenticated ? (
@@ -44,11 +65,7 @@ function AppContent() {
                 Leaderboard
               </NavLink>
               <button
-                onClick={() => {
-                  setAuthState(AuthState.Unauthenticated);
-                  setUserName("");
-                  navigate("/");
-                }}
+                onClick={logout}
                 className="bg-blue-500 hover:bg-red-300 w-full text-center"
               >
                 Logout
@@ -77,7 +94,10 @@ function AppContent() {
             <>
               <Route path="/" element={<Budget userName={userName} />} />
               <Route path="/budget" element={<Budget userName={userName} />} />
-              <Route path="/leaderboard" element={<Leaderboard userName={userName} />} />
+              <Route
+                path="/leaderboard"
+                element={<Leaderboard userName={userName} />}
+              />
             </>
           )}
 
