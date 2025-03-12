@@ -36,19 +36,20 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var bcryptjs_1 = require("bcryptjs");
-var uuid = require("uuid");
-var express_1 = require("express");
-var cookie_parser_1 = require("cookie-parser");
-var app = (0, express_1.default)();
+var express = require('express');
+var cookieParser = require('cookie-parser');
+var bcrypt = require('bcryptjs');
+var uuid = require('uuid');
+// Create Express app with proper type
+var app = express();
 var authCookieName = "token";
 var users = [];
 var scores = [];
 var port = process.argv.length > 2 ? process.argv[2] : 4000;
-app.use(express_1.default.json());
-app.use((0, cookie_parser_1.default)());
-app.use(express_1.default.static("public"));
-var apiRouter = express_1.default.Router();
+app.use(express.json());
+app.use(cookieParser());
+app.use(express.static("public"));
+var apiRouter = express.Router();
 app.use("/api", apiRouter);
 apiRouter.post("/auth/create", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var user;
@@ -85,7 +86,7 @@ apiRouter.post("/auth/login", function (req, res) { return __awaiter(void 0, voi
                 user = _b.sent();
                 _a = !user;
                 if (_a) return [3 /*break*/, 3];
-                return [4 /*yield*/, bcryptjs_1.default.compare(req.body.password, user.password)];
+                return [4 /*yield*/, bcrypt.compare(req.body.password, user.password)];
             case 2:
                 _a = !(_b.sent());
                 _b.label = 3;
@@ -167,7 +168,10 @@ function updateScores(newScore) {
     return scores;
 }
 app.use(function (err, req, res, next) {
-    res.status(500).send({ type: err.name, message: err.message });
+    res.status(500).send({
+        type: err.name,
+        message: err.message
+    });
 });
 app.use(function (_req, res) {
     res.sendFile("index.html", { root: "public" });
@@ -177,7 +181,7 @@ function createUser(email, password) {
         var passwordHash, user;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, bcryptjs_1.default.hash(password, 10)];
+                case 0: return [4 /*yield*/, bcrypt.hash(password, 10)];
                 case 1:
                     passwordHash = _a.sent();
                     user = {

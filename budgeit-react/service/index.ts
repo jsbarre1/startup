@@ -1,11 +1,12 @@
 import { UUID, User, Score } from "./types";
 
-import * as bcrypt from "bcryptjs";
-import * as uuid from "uuid";
-import express from "express";
-import cookieParser from "cookie-parser";
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const bcrypt = require('bcryptjs');
+const uuid = require('uuid');
 import { Request, Response, NextFunction } from 'express';
 
+// Create Express app with proper type
 const app = express();
 
 const authCookieName = "token";

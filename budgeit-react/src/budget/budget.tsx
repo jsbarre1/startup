@@ -244,7 +244,7 @@ export function Budget({ userName }: { userName: string }) {
               Recent:
               <div className="flex flex-col rounded-xl">
                 {transactions.map((transaction, index) => (
-                  <div key={index} className="flex flex-row justify-evenly bg-blue-300 shadow-md rounded-2xl mt-1">
+                  <div key={index} className={`flex flex-row justify-evenly ${transaction.type === "income" ?"bg-green-200": "bg-red-200"} shadow-md rounded-2xl mt-1`}>
                     <div className=" text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">
                       {transaction.date.toLocaleDateString()}
                     </div>
@@ -252,7 +252,7 @@ export function Budget({ userName }: { userName: string }) {
                       {transaction.type}
                     </div>
                     <div className=" text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">
-                      ${transaction.amount}
+                      {transaction.type === "income" ? <span>+</span> : <span>-</span>}${transaction.amount}
                     </div>
                   </div>
                 ))}
