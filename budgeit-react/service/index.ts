@@ -139,22 +139,32 @@ apiRouter.post(
 );
 
 function updateScores(newScore: Score) {
-  let found = false;
-  for (const [i, prevScore] of scores.entries()) {
-    if (newScore.score > prevScore.score) {
-      scores.splice(i, 0, newScore);
-      found = true;
-      break;
+  const existingScoreIndex = scores.findIndex(score => score.username === newScore.username);
+  
+  if (existingScoreIndex !== -1) {
+    scores[existingScoreIndex].score += newScore.score;
+    
+    scores.sort((a, b) => b.score - a.score);
+  } else {
+    let inserted = false;
+    
+    for (let i = 0; i < scores.length; i++) {
+      if (newScore.score > scores[i].score) {
+        scores.splice(i, 0, newScore);
+        inserted = true;
+        break;
+      }
+    }
+    
+    if (!inserted) {
+      scores.push(newScore);
     }
   }
-
-  if (!found) {
-    scores.push(newScore);
-  }
-
+  
   if (scores.length > 10) {
     scores.length = 10;
   }
+  
   return scores;
 }
 
@@ -215,6 +225,8 @@ function setAuthCookie(
     });
   }
 }
+
+
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
