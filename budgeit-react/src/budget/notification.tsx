@@ -18,7 +18,7 @@ export default function Notification({
       setTimeout(() => {
         setState(false);
       }, 500); // Account for the transition duration
-    }, 1500);
+    }, 3000);
 
     // Clean up the timer if component unmounts
     return () => {

@@ -45,11 +45,11 @@ interface PieChartData {
 export function Budget({ userName }: { userName: string }) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [newTransaction, setNewTransaction] = useState({
-    date: "",
+    date: new Date().toISOString().split('T')[0],
     amount: "",
-    type: "error" as tType,
+    type: "income" as tType,
   });
-  const [hasScored, setHasScored] = useState<boolean>(false)
+  const [hasScored, setHasScored] = useState<boolean>(false);
   const [pieData, setPieData] = useState<
     Array<{ name: string; value: number }>
   >([]);
@@ -86,7 +86,7 @@ export function Budget({ userName }: { userName: string }) {
     setPieData(formattedData);
   }, [transactions]);
 
-  const handleAddTransaction = (e: React.FormEvent) => {
+  const handleAddTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTransaction.date || !newTransaction.amount) return;
 
@@ -97,8 +97,28 @@ export function Budget({ userName }: { userName: string }) {
     };
 
     setTransactions([...transactions, transaction]);
-    setNewTransaction({ date: "", amount: "", type: "grocery" });
-    setHasScored(true)
+    setNewTransaction({ date: new Date().toISOString().split('T')[0], amount: "", type: "income" });
+
+    try {
+      const response = await fetch("/api/score", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: userName,
+          score: 100,
+        }),
+      });
+
+      if (response.ok) {
+        setHasScored(true);
+      } else {
+        console.error("Failed to update score");
+      }
+    } catch (error) {
+      console.error("Error updating score:", error);
+    }
   };
 
   const formatTooltipValue = (
@@ -113,7 +133,9 @@ export function Budget({ userName }: { userName: string }) {
   return (
     <>
       {hasScored ? (
-        <Notification setState={setHasScored}>YAY! You scored 1000 points!</Notification>
+        <Notification setState={setHasScored}>
+          YAY! You scored 100 points!
+        </Notification>
       ) : null}
       <main className="pt-6 flex flex-col">
         <h1 className="text-center">Welcome {userName} to MyBudget!</h1>
@@ -129,6 +151,7 @@ export function Budget({ userName }: { userName: string }) {
               <input
                 className="bg-white text-center rounded-2xl text-sm w-[110px] lg:w-[200px]"
                 type="date"
+                value={newTransaction.date}
                 onChange={(e) =>
                   setNewTransaction({ ...newTransaction, date: e.target.value })
                 }
@@ -138,6 +161,7 @@ export function Budget({ userName }: { userName: string }) {
                 type="number"
                 step=".01"
                 placeholder="amount"
+                value={newTransaction.amount}
                 onChange={(e) =>
                   setNewTransaction({
                     ...newTransaction,
@@ -155,8 +179,8 @@ export function Budget({ userName }: { userName: string }) {
                   })
                 }
               >
-                {transactionTypes.map((type) => (
-                  <option key={type} value={type}>
+                {transactionTypes.map((type, index) => (
+                  <option key={index} value={type}>
                     {type}
                   </option>
                 ))}
@@ -172,7 +196,7 @@ export function Budget({ userName }: { userName: string }) {
         </div>
         {transactions.length > 0 ? (
           <>
-            <div className="w-full md:w-[800px] border border-green-50 rounded-lg mb-2 self-center mt-6">
+          {pieData.length > 0 ? <div className="w-full md:w-[800px] border border-green-50 rounded-lg self-center mt-6">
               <div className="bg-white rounded-lg shadow-md p-4 w-full">
                 <h3 className="text-center font-semibold mb-2">
                   Expenses by Category
@@ -214,12 +238,13 @@ export function Budget({ userName }: { userName: string }) {
                     .toFixed(2)}
                 </div>
               </div>
-            </div>
-            <div className="flex flex-col bg-gray-200 self-center w-full md:w-[800px] rounded-lg shadow-md text-center">
+            </div>: null}
+            
+            <div className="flex flex-col bg-gray-200 self-center w-full md:w-[800px] mt-2 rounded-lg shadow-md text-center">
               Recent:
               <div className="flex flex-col rounded-xl">
-                {transactions.map((transaction) => (
-                  <div className="flex flex-row justify-evenly bg-blue-300 shadow-md rounded-2xl mt-1">
+                {transactions.map((transaction, index) => (
+                  <div key={index} className="flex flex-row justify-evenly bg-blue-300 shadow-md rounded-2xl mt-1">
                     <div className=" text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">
                       {transaction.date.toLocaleDateString()}
                     </div>
