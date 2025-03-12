@@ -117,5 +117,7 @@ I liked how tailwind was easy to style things but I used a lot of the same code 
 So cool to not have to redo the header each time since it was taken over by components and the router. I also liked learing more about npm.
 
 ## React Part Two
-In react part two I learned a lot about state and how we can use different hooks to manipulate it. Specifically useEffect was fun to use since it fires after the each render depending on the dependecy matrix of the useEffect. It was also cool to use conditional rendering for the router to grant access to someone when they are authenticated and remove access if they became not authenticated .
+In react part two I learned a lot about state and how we can use different hooks to manipulate it. Specifically useEffect was fun to use since it fires after the each render depending on the dependecy matrix of the useEffect. It was also cool to use conditional rendering for the router to grant access to someone when they are authenticated and remove access if they became not authenticated.
 
+## Startup Service
+I learned a lot in this part of the project. Mainly how a backend works. I enjoyed setting up different endpoints and manipulating the data stored in the backend. I also learned how to call those endpoints with fetch functions. It was also fun to hit the 3rd party api as I am hitting a random cat image api. 

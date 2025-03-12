@@ -118,11 +118,11 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Node.js/Express HTTP service** - I did not complete this part of the deliverable.
-- [ ] **Static middleware for frontend** - I did not complete this part of the deliverable.
-- [ ] **Calls to third party endpoints** - I did not complete this part of the deliverable.
-- [ ] **Backend service endpoints** - I did not complete this part of the deliverable.
-- [ ] **Frontend calls service endpoints** - I did not complete this part of the deliverable.
+- [x] **Node.js/Express HTTP service** - Yes I have a http service using node and express
+- [x] **Static middleware for frontend** - Yes I have expres static middleware
+- [x] **Calls to third party endpoints** - calls a random cat api when you score points (creating a transaction)
+- [x] **Backend service endpoints** - Yes, multiple service endpoints for scoring points, retrieving scores, etc.
+- [x] **Frontend calls service endpoints** - Yes, my frontend calls the backend
 
 ## 🚀 DB/Login deliverable
 
