@@ -90,8 +90,11 @@ export function Budget({ userName }: { userName: string }) {
     e.preventDefault();
     if (!newTransaction.date || !newTransaction.amount) return;
 
+    const [year, month, day] = newTransaction.date.split('-').map(Number);
+    const dateWithoutTimezoneShift = new Date(year, month - 1, day);
+    
     const transaction: Transaction = {
-      date: new Date(newTransaction.date),
+      date: dateWithoutTimezoneShift,
       amount: newTransaction.amount,
       type: newTransaction.type,
     };
@@ -138,7 +141,7 @@ export function Budget({ userName }: { userName: string }) {
     <>
       {hasScored ? (
         <Notification setState={setHasScored}>
-          YAY! You scored 100 points!
+          MEOW! You scored 100 points!
         </Notification>
       ) : null}
       <main className="pt-6 flex flex-col">
