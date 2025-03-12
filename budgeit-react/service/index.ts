@@ -1,13 +1,15 @@
-import { UUID } from "crypto";
-import { Score, User } from "./types";
+import { UUID, User, Score } from "./types";
 
-const cookieParser = require("cookie-parser");
-const bcrypt = require("bcryptjs");
-const express = require("express");
-const uuid = require("uuid");
+import * as bcrypt from "bcryptjs";
+import * as uuid from "uuid";
+import express from "express";
+import cookieParser from "cookie-parser";
+import { Request, Response, NextFunction } from 'express';
+
 const app = express();
 
 const authCookieName = "token";
+
 
 let users: User[] = [];
 let scores: Score[] = [];
@@ -23,29 +25,15 @@ app.use(express.static("public"));
 var apiRouter = express.Router();
 app.use(`/api`, apiRouter);
 
-apiRouter.post(
-  "/auth/create",
-  async (
-    req: { body: { email: string; password: string } },
-    res: {
-      status: (arg0: number) => {
-        (): any;
-        new (): any;
-        send: { (arg0: { msg: string }): void; new (): any };
-      };
-      send: (arg0: { email: string }) => void;
-    }
-  ) => {
-    if (await findUser("email", req.body.email)) {
-      res.status(409).send({ msg: "Existing user" });
-    } else {
-      const user = await createUser(req.body.email, req.body.password);
-
-      setAuthCookie(res, user.token);
-      res.send({ email: user.email });
-    }
+apiRouter.post("/auth/create", async (req: Request, res: Response) => {
+  if (await findUser("email", req.body.email)) {
+    res.status(409).send({ msg: "Existing user" });
+  } else {
+    const user = await createUser(req.body.email, req.body.password);
+    setAuthCookie(res, user.token);
+    res.send({ email: user.email });
   }
-);
+});
 
 async function findUser(
   key: "email" | "token",
@@ -54,65 +42,29 @@ async function findUser(
   return users.find((user) => user[key] === value) || null;
 }
 
-apiRouter.post(
-  "/auth/login",
-  async (
-    req: { body: { email: string; password: any } },
-    res: {
-      status: (arg0: number) => {
-        (): any;
-        new (): any;
-        send: { (arg0: { msg: string }): void; new (): any };
-      };
-      send: (arg0: { email: string }) => void;
-    }
-  ) => {
-    const user = await findUser("email", req.body.email);
+apiRouter.post("/auth/login", async (req: Request, res: Response) => {
+  const user = await findUser("email", req.body.email);
 
-    if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
-      res.status(401).send({ msg: "Unauthorized" });
-      return;
-    }
-
-    user.token = uuid.v4() as UUID;
-    setAuthCookie(res, user.token);
-    res.send({ email: user.email });
+  if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
+    res.status(401).send({ msg: "Unauthorized" });
+    return;
   }
-);
 
-apiRouter.delete(
-  "/auth/logout",
-  async (
-    req: { cookies: { [x: string]: string } },
-    res: {
-      clearCookie: (arg0: string) => void;
-      status: (arg0: number) => {
-        (): any;
-        new (): any;
-        end: { (): void; new (): any };
-      };
-    }
-  ) => {
-    const user = await findUser("token", req.cookies[authCookieName]);
-    if (user) {
-      delete user.token;
-    }
-    res.clearCookie(authCookieName);
-    res.status(204).end();
+  user.token = uuid.v4() as UUID;
+  setAuthCookie(res, user.token);
+  res.send({ email: user.email });
+});
+
+apiRouter.delete("/auth/logout", async (req: Request, res: Response) => {
+  const user = await findUser("token", req.cookies[authCookieName]);
+  if (user) {
+    delete user.token;
   }
-);
+  res.clearCookie(authCookieName);
+  res.status(204).end();
+});
 
-const verifyAuth = async (
-  req: { cookies: { [x: string]: string } },
-  res: {
-    status: (arg0: number) => {
-      (): any;
-      new (): any;
-      send: { (arg0: { msg: string }): void; new (): any };
-    };
-  },
-  next: () => void
-) => {
+const verifyAuth = async (req: Request, res: Response, next: NextFunction) => {
   const user = await findUser("token", req.cookies[authCookieName]);
   if (user) {
     next();
@@ -121,25 +73,18 @@ const verifyAuth = async (
   }
 };
 
-apiRouter.get(
-  "/scores",
-  verifyAuth,
-  (_req: any, res: { send: (arg0: Score[]) => void }) => {
-    res.send(scores);
-  }
-);
+apiRouter.get("/scores", verifyAuth, (_req: Request, res: Response) => {
+  res.send(scores);
+});
 
-apiRouter.post(
-  "/score",
-  verifyAuth,
-  (req: { body: Score }, res: { send: (arg0: Score[]) => void }) => {
-    scores = updateScores(req.body);
-    res.send(scores);
-  }  
-);
+apiRouter.post("/score", verifyAuth, (req: Request, res: Response) => {
+  scores = updateScores(req.body);
+  res.send(scores);
+});
+
 
 function updateScores(newScore: Score) {
-  const existingScoreIndex = scores.findIndex(score => score.username === newScore.username);
+  const existingScoreIndex = scores.findIndex(score => score.userName === newScore.userName);
   
   if (existingScoreIndex !== -1) {
     scores[existingScoreIndex].score += newScore.score;
@@ -169,29 +114,17 @@ function updateScores(newScore: Score) {
   return scores;
 }
 
-app.use(function (
-  err: { name: any; message: any },
-  req: any,
-  res: {
-    status: (arg0: number) => {
-      (): any;
-      new (): any;
-      send: { (arg0: { type: any; message: any }): void; new (): any };
-    };
-  },
-  next: any
-) {
-  res.status(500).send({ type: err.name, message: err.message });
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  res.status(500).send({ 
+    type: err.name, 
+    message: err.message 
+  });
 });
 
-app.use(
-  (
-    _req: any,
-    res: { sendFile: (arg0: string, arg1: { root: string }) => void }
-  ) => {
-    res.sendFile("index.html", { root: "public" });
-  }
-);
+app.use((_req: Request, res: Response) => {
+  res.sendFile("index.html", { root: "public" });
+});
+
 
 async function createUser(email: string, password: string) {
   const passwordHash = await bcrypt.hash(password, 10);
@@ -207,15 +140,7 @@ async function createUser(email: string, password: string) {
 }
 
 function setAuthCookie(
-  res: {
-    status?: (arg0: number) => {
-      (): any;
-      new (): any;
-      send: { (arg0: { msg: string }): void; new (): any };
-    };
-    send?: (arg0: { email: string }) => void;
-    cookie?: any;
-  },
+  res: Response,
   authToken: UUID | undefined
 ) {
   if (authToken) {

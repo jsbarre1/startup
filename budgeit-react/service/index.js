@@ -36,19 +36,19 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var cookieParser = require("cookie-parser");
-var bcrypt = require("bcryptjs");
-var express = require("express");
+var bcryptjs_1 = require("bcryptjs");
 var uuid = require("uuid");
-var app = express();
+var express_1 = require("express");
+var cookie_parser_1 = require("cookie-parser");
+var app = (0, express_1.default)();
 var authCookieName = "token";
 var users = [];
 var scores = [];
 var port = process.argv.length > 2 ? process.argv[2] : 4000;
-app.use(express.json());
-app.use(cookieParser());
-app.use(express.static("public"));
-var apiRouter = express.Router();
+app.use(express_1.default.json());
+app.use((0, cookie_parser_1.default)());
+app.use(express_1.default.static("public"));
+var apiRouter = express_1.default.Router();
 app.use("/api", apiRouter);
 apiRouter.post("/auth/create", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var user;
@@ -85,7 +85,7 @@ apiRouter.post("/auth/login", function (req, res) { return __awaiter(void 0, voi
                 user = _b.sent();
                 _a = !user;
                 if (_a) return [3 /*break*/, 3];
-                return [4 /*yield*/, bcrypt.compare(req.body.password, user.password)];
+                return [4 /*yield*/, bcryptjs_1.default.compare(req.body.password, user.password)];
             case 2:
                 _a = !(_b.sent());
                 _b.label = 3;
@@ -142,7 +142,7 @@ apiRouter.post("/score", verifyAuth, function (req, res) {
     res.send(scores);
 });
 function updateScores(newScore) {
-    var existingScoreIndex = scores.findIndex(function (score) { return score.username === newScore.username; });
+    var existingScoreIndex = scores.findIndex(function (score) { return score.userName === newScore.userName; });
     if (existingScoreIndex !== -1) {
         scores[existingScoreIndex].score += newScore.score;
         scores.sort(function (a, b) { return b.score - a.score; });
@@ -177,7 +177,7 @@ function createUser(email, password) {
         var passwordHash, user;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, bcrypt.hash(password, 10)];
+                case 0: return [4 /*yield*/, bcryptjs_1.default.hash(password, 10)];
                 case 1:
                     passwordHash = _a.sent();
                     user = {

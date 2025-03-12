@@ -1,5 +1,6 @@
-import { UUID } from "crypto"
 
+
+export type UUID = string
 export interface User {
     email: string
     password: string
@@ -8,5 +9,5 @@ export interface User {
 
 export interface Score {
     score: number
-    username: string
+    userName: string
 }
