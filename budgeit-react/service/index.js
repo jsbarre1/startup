@@ -142,21 +142,28 @@ apiRouter.post("/score", verifyAuth, function (req, res) {
     res.send(scores);
 });
 function updateScores(newScore) {
-    var found = false;
-    for (var _i = 0, _a = scores.entries(); _i < _a.length; _i++) {
-        var _b = _a[_i], i = _b[0], prevScore = _b[1];
-        if (newScore.score > prevScore.score) {
-            scores.splice(i, 0, newScore);
-            found = true;
-            break;
-        }
+    var existingScoreIndex = scores.findIndex(function (score) { return score.username === newScore.username; });
+    if (existingScoreIndex !== -1) {
+        scores[existingScoreIndex].score += newScore.score;
+        scores.sort(function (a, b) { return b.score - a.score; });
     }
-    if (!found) {
-        scores.push(newScore);
+    else {
+        var inserted = false;
+        for (var i = 0; i < scores.length; i++) {
+            if (newScore.score > scores[i].score) {
+                scores.splice(i, 0, newScore);
+                inserted = true;
+                break;
+            }
+        }
+        if (!inserted) {
+            scores.push(newScore);
+        }
     }
     if (scores.length > 10) {
         scores.length = 10;
     }
+    console.log(scores);
     return scores;
 }
 app.use(function (err, req, res, next) {

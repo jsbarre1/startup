@@ -140,11 +140,11 @@ export function Budget({ userName }: { userName: string }) {
       <main className="pt-6 flex flex-col">
         <h1 className="text-center">Welcome {userName} to MyBudget!</h1>
 
-        <div>
+        {/* <div>
           <button className="p-1 w-[80px] lg:w-[100px] rounded-3xl bg-blue-500 shadow-md text-white text-xs">
             edit plan
           </button>
-        </div>
+        </div> */}
         <div className="flex flex-col self-center w-full md:w-[800px] rounded-lg shadow-md text-center pt-2">
           <form onSubmit={handleAddTransaction}>
             <div className="flex flex-row ring-2 shadow-md ring-blue-400 bg-blue-400 justify-evenly rounded-xl">

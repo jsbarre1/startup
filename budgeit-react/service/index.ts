@@ -135,7 +135,7 @@ apiRouter.post(
   (req: { body: Score }, res: { send: (arg0: Score[]) => void }) => {
     scores = updateScores(req.body);
     res.send(scores);
-  }
+  }  
 );
 
 function updateScores(newScore: Score) {
@@ -164,7 +164,8 @@ function updateScores(newScore: Score) {
   if (scores.length > 10) {
     scores.length = 10;
   }
-  
+  console.log(scores);
+
   return scores;
 }
 
