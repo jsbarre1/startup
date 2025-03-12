@@ -17,26 +17,26 @@ export function Leaderboard({ userName }: { userName: string }) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [nextNotificationId, setNextNotificationId] = useState(1);
 
-  useEffect(() => {
-    const fetchScores = async () => {
-      try {
-        const response = await fetch("/api/scores");
+  const fetchScores = async () => {
+    try {
+      const response = await fetch("/api/scores");
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch scores");
-        }
-
-        const scores = await response.json() as LeaderBoard[];
-
-        setLeaderBoardData(scores);
-      } catch (error) {
-        console.error("Error fetching scores:", error);
+      if (!response.ok) {
+        throw new Error("Failed to fetch scores");
       }
-    };
 
+      const scores = (await response.json()) as LeaderBoard[];
+
+      setLeaderBoardData(scores);
+    } catch (error) {
+      console.error("Error fetching scores:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchScores();
 
-    const interval = setInterval(fetchScores, 10000); 
+    const interval = setInterval(fetchScores, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -49,17 +49,36 @@ export function Leaderboard({ userName }: { userName: string }) {
         timestamp: new Date(),
       };
 
+      const backendAddScore = async (userName: string, points: number) => {
+        try {
+          const response = await fetch("/api/score", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userName: userName,
+              score: points,
+            }),
+          });
+
+          if (response.ok) {
+            fetchScores()
+          } else {
+            console.error("Failed to update score");
+          }
+        } catch (error) {
+          console.error("Error updating score:", error);
+        }
+      };
+
+      backendAddScore(user, points);
+
       setNextNotificationId((prevId) => prevId + 1);
       setNotifications((prev) => [newNotification, ...prev].slice(0, 4));
-
-      playRandomSound();
     },
     [nextNotificationId]
   );
-
-  const playRandomSound = () => {
-    console.log("Playing random sound!");
-  };
 
   useEffect(() => {
     const users = [
@@ -71,7 +90,7 @@ export function Leaderboard({ userName }: { userName: string }) {
       "Priya",
       userName,
     ];
-    const pointValues = [50, 100, 200, 500];
+    const pointValues = [50, 100, 200];
 
     const generateRandomScore = () => {
       const randomUser = users[Math.floor(Math.random() * users.length)];

@@ -45,7 +45,7 @@ interface PieChartData {
 export function Budget({ userName }: { userName: string }) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [newTransaction, setNewTransaction] = useState({
-    date: new Date().toISOString().split('T')[0],
+    date: new Date().toISOString().split("T")[0],
     amount: "",
     type: "income" as tType,
   });
@@ -97,7 +97,11 @@ export function Budget({ userName }: { userName: string }) {
     };
 
     setTransactions([...transactions, transaction]);
-    setNewTransaction({ date: new Date().toISOString().split('T')[0], amount: "", type: "income" });
+    setNewTransaction({
+      date: new Date().toISOString().split("T")[0],
+      amount: "",
+      type: "income",
+    });
 
     try {
       const response = await fetch("/api/score", {
@@ -106,7 +110,7 @@ export function Budget({ userName }: { userName: string }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: userName,
+          userName: userName,
           score: 100,
         }),
       });
@@ -196,55 +200,84 @@ export function Budget({ userName }: { userName: string }) {
         </div>
         {transactions.length > 0 ? (
           <>
-          {pieData.length > 0 ? <div className="w-full md:w-[800px] border border-green-50 rounded-lg self-center mt-6">
-              <div className="bg-white rounded-lg shadow-md p-4 w-full">
-                <h3 className="text-center font-semibold mb-2">
-                  Expenses by Category
-                </h3>
-                <div className="h-72">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={pieData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={true}
-                        outerRadius={100}
-                        fill="#8884d8"
-                        dataKey="value"
-                        nameKey="name"
-                        label={({ name, percent }) =>
-                          `${name}: ${(percent * 100).toFixed(0)}%`
-                        }
-                      >
-                        {pieData.map((entry, index) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={COLORS[index % COLORS.length]}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        formatter={(value) => `${formatTooltipValue(value)}`}
-                      />
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="text-center text-sm mt-2">
-                  Total Expenses: $
-                  {pieData
-                    .reduce((sum, item) => sum + item.value, 0)
-                    .toFixed(2)}
+            {pieData.length > 0 ? (
+              <div className="w-full md:w-[800px] border border-green-50 rounded-lg self-center mt-6">
+                <div className="bg-white rounded-lg shadow-md p-4 w-full">
+                  <h3 className="text-center font-semibold mb-2">
+                    Expenses by Category
+                  </h3>
+                  <div className="h-72">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={pieData}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={true}
+                          outerRadius={100}
+                          fill="#8884d8"
+                          dataKey="value"
+                          nameKey="name"
+                          label={({ name, percent }) =>
+                            `${name}: ${(percent * 100).toFixed(0)}%`
+                          }
+                        >
+                          {pieData.map((entry, index) => (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={COLORS[index % COLORS.length]}
+                            />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          formatter={(value) => `${formatTooltipValue(value)}`}
+                        />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="flex flex-row justify-around w-full">
+                    <div className="text-center text-sm mt-2">
+                      Total Expenses: $
+                      {pieData
+                        .reduce((sum, item) => sum + item.value, 0)
+                        .toFixed(2)}
+                    </div>
+                    <div className="text-center text-sm mt-2">
+                      Total Income: $
+                      {transactions
+                        .filter((item) => item.type === "income")
+                        .reduce((sum, item) => sum + parseFloat(item.amount), 0)
+                        .toFixed(2)}
+                    </div>
+                    <div className="text-center text-sm mt-2">
+                      Net: $
+                      {(
+                        transactions
+                          .filter((item) => item.type === "income")
+                          .reduce(
+                            (sum, item) => sum + parseFloat(item.amount),
+                            0
+                          ) - pieData.reduce((sum, item) => sum + item.value, 0)
+                      ).toFixed(2)}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>: null}
-            
+            ) : null}
+
             <div className="flex flex-col bg-gray-200 self-center w-full md:w-[800px] mt-2 rounded-lg shadow-md text-center">
               Recent:
               <div className="flex flex-col rounded-xl">
                 {transactions.map((transaction, index) => (
-                  <div key={index} className={`flex flex-row justify-evenly ${transaction.type === "income" ?"bg-green-200": "bg-red-200"} shadow-md rounded-2xl mt-1`}>
+                  <div
+                    key={index}
+                    className={`flex flex-row justify-evenly ${
+                      transaction.type === "income"
+                        ? "bg-green-200"
+                        : "bg-red-200"
+                    } shadow-md rounded-2xl mt-1`}
+                  >
                     <div className=" text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">
                       {transaction.date.toLocaleDateString()}
                     </div>
@@ -252,7 +285,12 @@ export function Budget({ userName }: { userName: string }) {
                       {transaction.type}
                     </div>
                     <div className=" text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">
-                      {transaction.type === "income" ? <span>+</span> : <span>-</span>}${transaction.amount}
+                      {transaction.type === "income" ? (
+                        <span>+</span>
+                      ) : (
+                        <span>-</span>
+                      )}
+                      ${transaction.amount}
                     </div>
                   </div>
                 ))}

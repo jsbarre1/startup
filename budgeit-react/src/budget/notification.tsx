@@ -1,4 +1,5 @@
 import React, { ReactNode, useEffect, useState } from "react";
+import { getRandomCat } from "./random-cat";
 
 export default function Notification({
   children,
@@ -7,24 +8,39 @@ export default function Notification({
   children: ReactNode;
   setState: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false); 
+  const [catImageUrl, setCatImageUrl] = useState<string | null>(null);
+  
+  const getCat = async () => {
+    const imageUrl = await getRandomCat();
+    setCatImageUrl(imageUrl);
+  };
 
   useEffect(() => {
-    // Set a timeout to hide the notification after 1.5 seconds
-    const timer = setTimeout(() => {
-      setIsVisible(false);
-      
-      // Add another timeout to set the parent state after fade-out completes
-      setTimeout(() => {
-        setState(false);
-      }, 500); // Account for the transition duration
-    }, 3000);
+    getCat();
+  }, []);
 
-    // Clean up the timer if component unmounts
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [setState]);
+  useEffect(() => {
+    if (catImageUrl !== null) {
+      setIsVisible(true);
+      
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+        
+        setTimeout(() => {
+          setState(false);
+        }, 500); 
+      }, 3000);
+      
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [catImageUrl, setState]); 
+
+  if (catImageUrl === null) {
+    return null;
+  }
 
   return (
     <div
@@ -46,6 +62,7 @@ export default function Notification({
       ${isVisible ? "opacity-100" : "opacity-0"}
     `}
     >
+      <img src={catImageUrl} alt="Random cat" className="h-8 w-8 mr-2 rounded-full" />
       {children}
     </div>
   );
