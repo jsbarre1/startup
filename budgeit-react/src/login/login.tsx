@@ -99,20 +99,27 @@ export function Login({
         </form>
       </main>
       {displayError && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-            <div className="p-6">{displayError}</div>
-            <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end rounded-b-lg">
-              <button
-                onClick={() => setDisplayError(null)}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+    <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-auto transform transition-all scale-100 animate-fadeIn">
+      <div className="px-6 pt-6 pb-2">
+        <h3 className="text-lg font-semibold text-gray-900">Error</h3>
+      </div>
+      
+      <div className="px-6 py-4">
+        <p className="text-gray-700">{displayError}</p>
+      </div>
+      
+      <div className="px-6 py-4 flex justify-end rounded-b-xl">
+        <button 
+          onClick={() => setDisplayError(null)} 
+          className="px-5 py-2.5 bg-blue-500 text-white rounded-lg font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </>
   );
 }

@@ -42,30 +42,7 @@ interface PieChartData {
 }
 
 export function Budget({ userName }: { userName: string }) {
-  const sampleData: Transaction[] = [
-    {
-      date: new Date(2024, 11, 31),
-      amount: "24.35",
-      type: "gas",
-    },
-    {
-      date: new Date(2025, 0, 1),
-      amount: "500",
-      type: "rent",
-    },
-    {
-      date: new Date(2025, 0, 4),
-      amount: "24.35",
-      type: "fast food",
-    },
-    {
-      date: new Date(2025, 0, 5),
-      amount: "65.35",
-      type: "grocery",
-    },
-  ];
-
-  const [transactions, setTransactions] = useState<Transaction[]>(sampleData);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [newTransaction, setNewTransaction] = useState({
     date: "",
     amount: "",
@@ -183,65 +160,81 @@ export function Budget({ userName }: { userName: string }) {
           </div>
         </form>
       </div>
-      <div className="w-full md:w-[800px] border border-green-50 rounded-lg mb-2 self-center mt-6">
-        <div className="bg-white rounded-lg shadow-md p-4 w-full">
-          <h3 className="text-center font-semibold mb-2">
-            Expenses by Category
-          </h3>
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={true}
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                  nameKey="name"
-                  label={({ name, percent }) =>
-                    `${name}: ${(percent * 100).toFixed(0)}%`
-                  }
-                >
-                  {pieData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
+      {transactions.length > 0 ? (
+        <>
+          <div className="w-full md:w-[800px] border border-green-50 rounded-lg mb-2 self-center mt-6">
+            <div className="bg-white rounded-lg shadow-md p-4 w-full">
+              <h3 className="text-center font-semibold mb-2">
+                Expenses by Category
+              </h3>
+              <div className="h-72">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={true}
+                      outerRadius={100}
+                      fill="#8884d8"
+                      dataKey="value"
+                      nameKey="name"
+                      label={({ name, percent }) =>
+                        `${name}: ${(percent * 100).toFixed(0)}%`
+                      }
+                    >
+                      {pieData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(value) => `${formatTooltipValue(value)}`}
                     />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value) => `${formatTooltipValue(value)}`}
-                />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="text-center text-sm mt-2">
-            Total Expenses: $
-            {pieData.reduce((sum, item) => sum + item.value, 0).toFixed(2)}
-          </div>
-        </div>
-      </div>
-      <div className="flex flex-col bg-gray-200 self-center w-full md:w-[800px] rounded-lg shadow-md text-center">
-        Recent:
-        <div className="flex flex-col rounded-xl">
-          {transactions.map((transaction) => (
-            <div className="flex flex-row justify-evenly bg-blue-300 shadow-md rounded-2xl mt-1">
-              <div className=" text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">
-                {transaction.date.toLocaleDateString()}
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
               </div>
-              <div className=" text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">
-                {transaction.type}
-              </div>
-              <div className=" text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">
-                ${transaction.amount}
+              <div className="text-center text-sm mt-2">
+                Total Expenses: $
+                {pieData.reduce((sum, item) => sum + item.value, 0).toFixed(2)}
               </div>
             </div>
-          ))}
+          </div>
+          <div className="flex flex-col bg-gray-200 self-center w-full md:w-[800px] rounded-lg shadow-md text-center">
+            Recent:
+            <div className="flex flex-col rounded-xl">
+              {transactions.map((transaction) => (
+                <div className="flex flex-row justify-evenly bg-blue-300 shadow-md rounded-2xl mt-1">
+                  <div className=" text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">
+                    {transaction.date.toLocaleDateString()}
+                  </div>
+                  <div className=" text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">
+                    {transaction.type}
+                  </div>
+                  <div className=" text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">
+                    ${transaction.amount}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="w-full md:w-[800px] self-center mt-8 mb-6 p-6 bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl shadow-sm border border-green-100 text-center">
+          <div className="flex flex-col items-center justify-center gap-3">
+            <h3 className="text-xl font-medium text-gray-800">
+              Get started by adding transactions!
+            </h3>
+            <p className="text-gray-600 max-w-md">
+              Track your spending and income to gain insights into your
+              financial habits.
+            </p>
+          </div>
         </div>
-      </div>
+      )}
     </main>
   );
 }
