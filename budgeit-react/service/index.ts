@@ -4,9 +4,14 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
 const uuid = require('uuid');
+const {MongoClient} = require('mongodb')
+const config = require('./dbConfig.json')
+
+const url = `mongodb+srv://${config.username}:${config.password}@${config.hostname}`
 import { Request, Response, NextFunction } from 'express';
 
-// Create Express app with proper type
+const client = new MongoClient(url)
+const db = client.db('')
 const app = express();
 
 const authCookieName = "token";
