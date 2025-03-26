@@ -29,35 +29,45 @@ const authCookieName = "token";
   }
 })();
 
-function getUser(email: string) {
-  return userCollection.findOne({ email: email });
+async function findUser(key: "email" | "token", value: string): Promise<User | null> {
+  if (key === "email") {
+    return await userCollection.findOne({ email: value });
+  } else {
+    return await userCollection.findOne({ token: value });
+  }
 }
 
-function getUserByToken(token: UUID) {
-  return userCollection.findOne({ token: token });
-}
+async function createUser(email: string, password: string): Promise<User> {
+  const passwordHash = await bcrypt.hash(password, 10);
 
-async function addUser(user: User) {
+  const user: User = {
+    email: email,
+    password: passwordHash,
+    token: uuid.v4() as UUID,
+  };
+  
   await userCollection.insertOne(user);
+  return user;
 }
 
-async function updateUser(user: User) {
-  await userCollection.updateOne({ email: user.email }, { $set: user });
+async function updateUserToken(email: string, token: UUID | null) {
+  if (token) {
+    await userCollection.updateOne({ email }, { $set: { token } });
+  } else {
+    await userCollection.updateOne({ email }, { $unset: { token: "" } });
+  }
 }
 
-async function addScore(score: Score) {
-  return scoreCollection.insertOne(score);
-}
-
-function getHighScores() {
+// MongoDB score operations
+async function getHighScores(): Promise<Score[]> {
   const query = { score: { $gt: 0, $lt: 900 } };
   const options = {
     sort: { score: -1 },
     limit: 10,
   };
-  const cursor = scoreCollection.find(query, options);
-  return cursor.toArray();
+  return await scoreCollection.find(query, options).toArray();
 }
+
 
 let users: User[] = [];
 let scores: Score[] = [];
@@ -83,12 +93,7 @@ apiRouter.post("/auth/create", async (req: Request, res: Response) => {
   }
 });
 
-async function findUser(
-  key: "email" | "token",
-  value: string
-): Promise<User | null | undefined> {
-  return users.find((user) => user[key] === value) || null;
-}
+
 
 apiRouter.post("/auth/login", async (req: Request, res: Response) => {
   const user = await findUser("email", req.body.email);
@@ -172,20 +177,6 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 app.use((_req: Request, res: Response) => {
   res.sendFile("index.html", { root: "public" });
 });
-
-
-async function createUser(email: string, password: string) {
-  const passwordHash = await bcrypt.hash(password, 10);
-
-  const user: User = {
-    email: email,
-    password: passwordHash,
-    token: uuid.v4(),
-  };
-  users.push(user);
-
-  return user;
-}
 
 function setAuthCookie(
   res: Response,
