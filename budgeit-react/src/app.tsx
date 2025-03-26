@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BrowserRouter,
   NavLink,
@@ -26,10 +26,6 @@ function AppContent() {
     : AuthState.Unauthenticated;
   const [authState, setAuthState] = useState<AuthState>(currentAuthState);
 
-  const onAuthChange = (userName: string, authState: AuthState) => {
-    setAuthState(authState);
-    setUserName(userName);
-  };
 
   const logout = () => {
     fetch(`/api/auth/logout`, {
@@ -52,18 +48,22 @@ function AppContent() {
         <header>
           <nav className="fixed">
             <menu className="flex flex-row w-screen justify-between justify-items-center">
-              <NavLink
+              <button
                 className="bg-blue-500 hover:bg-red-300 w-full text-center"
-                to="budget"
+                onClick={() => {
+                  navigate("/budget");
+                }}
               >
                 Budget
-              </NavLink>
-              <NavLink
+              </button>
+              <button
                 className="bg-blue-500 hover:bg-red-300 w-full text-center"
-                to="leaderboard"
+                onClick={() => {
+                  navigate("/leaderboard");
+                }}
               >
                 Leaderboard
-              </NavLink>
+              </button>
               <button
                 onClick={logout}
                 className="bg-blue-500 hover:bg-red-300 w-full text-center"
@@ -79,29 +79,23 @@ function AppContent() {
 
       <main className="p-4">
         <Routes>
-          {authState === AuthState.Unauthenticated ? (
-            <Route
-              path="/"
-              element={
-                <Login
-                  userName={userName}
-                  authState={authState}
-                  onAuthChange={onAuthChange}
-                />
-              }
-            />
-          ) : (
-            <>
-              <Route path="/" element={<Budget userName={userName} />} />
-              <Route path="/budget" element={<Budget userName={userName} />} />
-              <Route
-                path="/leaderboard"
-                element={<Leaderboard userName={userName} />}
+          <Route
+            path="/"
+            element={
+              <Login
+                userName={userName}
+                authState={authState}
+                setAuthState={setAuthState}
+                setUserName={setUserName}
               />
-            </>
-          )}
-
-          <Route path="*" element={<NotFound />} />
+            }
+          />
+            <Route path="/budget" element={<Budget authState={authState} userName={userName} />} />
+            <Route
+              path="/leaderboard"
+              element={<Leaderboard authState={authState} userName={userName} />}
+            />
+            <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
 

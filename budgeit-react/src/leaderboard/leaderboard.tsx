@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-
+import { AuthState } from "../app";
+import UnauthorizedMessage from "../login/unauthorizedMessage";
 interface LeaderBoard {
   score: number;
   userName: string;
@@ -12,11 +13,13 @@ interface Notification {
   timestamp: Date;
 }
 
-export function Leaderboard({ userName }: { userName: string }) {
+export function Leaderboard({ authState, userName }: { userName: string, authState: AuthState }) {
   const [leaderBoardData, setLeaderBoardData] = useState<LeaderBoard[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [nextNotificationId, setNextNotificationId] = useState(1);
 
+  if(authState === AuthState.Unauthenticated){
+    return (<UnauthorizedMessage/>)
+  }
   const fetchScores = async () => {
     try {
       const response = await fetch("/api/scores");
@@ -40,78 +43,6 @@ export function Leaderboard({ userName }: { userName: string }) {
     return () => clearInterval(interval);
   }, []);
 
-  const addScore = useCallback(
-    (user: string, points: number) => {
-      const newNotification: Notification = {
-        id: nextNotificationId,
-        userName: user,
-        points,
-        timestamp: new Date(),
-      };
-
-      const backendAddScore = async (userName: string, points: number) => {
-        try {
-          const response = await fetch("/api/score", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              userName: userName,
-              score: points,
-            }),
-          });
-
-          if (response.ok) {
-            fetchScores()
-          } else {
-            console.error("Failed to update score");
-          }
-        } catch (error) {
-          console.error("Error updating score:", error);
-        }
-      };
-
-      backendAddScore(user, points);
-
-      setNextNotificationId((prevId) => prevId + 1);
-      setNotifications((prev) => [newNotification, ...prev].slice(0, 4));
-    },
-    [nextNotificationId]
-  );
-
-  useEffect(() => {
-    const users = [
-      "James",
-      "Brock",
-      "Aliza",
-      "Sophie",
-      "Miguel",
-      "Priya",
-      userName,
-    ];
-    const pointValues = [50, 100, 200];
-
-    const generateRandomScore = () => {
-      const randomUser = users[Math.floor(Math.random() * users.length)];
-      const randomPoints =
-        pointValues[Math.floor(Math.random() * pointValues.length)];
-      addScore(randomUser, randomPoints);
-    };
-
-    const initialTimeout = setTimeout(() => {
-      generateRandomScore();
-    }, 3000);
-
-    const interval = setInterval(() => {
-      generateRandomScore();
-    }, 3000);
-
-    return () => {
-      clearTimeout(initialTimeout);
-      clearInterval(interval);
-    };
-  }, [addScore, userName]);
 
   useEffect(() => {
     const sortedData = [...leaderBoardData].sort((a, b) => b.score - a.score);

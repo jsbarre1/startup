@@ -8,6 +8,8 @@ import {
   Tooltip,
 } from "recharts";
 import Notification from "./notification";
+import { AuthState } from "../app";
+import UnauthorizedMessage from "../login/unauthorizedMessage";
 
 type tType =
   | "income"
@@ -43,7 +45,7 @@ interface PieChartData {
   value: number;
 }
 
-export function Budget({ userName }: { userName: string }) {
+export function Budget({ authState, userName }: { userName: string, authState: AuthState }) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [newTransaction, setNewTransaction] = useState({
     date: new Date().toISOString().split("T")[0],
@@ -56,6 +58,10 @@ export function Budget({ userName }: { userName: string }) {
   const [pieData, setPieData] = useState<
     Array<{ name: string; value: number }>
   >([]);
+
+  if(authState === AuthState.Unauthenticated){
+    return (<UnauthorizedMessage/>)
+  }
 
   const COLORS = [
     "#0088FE",
@@ -104,7 +110,7 @@ export function Budget({ userName }: { userName: string }) {
     };
     fetchTransactions();
   }, []);
-  
+
   useEffect(() => {
     const expensesByType = transactions.reduce((acc, transaction) => {
       if (transaction.type === "income") return acc;

@@ -1,20 +1,23 @@
 import React, { useState } from "react";
 import { AuthState } from "../app";
+import { useNavigate } from "react-router-dom";
 
 export function Login({
   userName,
   authState,
-  onAuthChange,
+  setAuthState,
+  setUserName
 }: {
   userName: string;
   authState: AuthState;
-  onAuthChange: (userName: string, authState: AuthState) => void;
+  setAuthState: React.Dispatch<React.SetStateAction<AuthState>>;
+  setUserName: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const [inputUserName, setInputUserName] = useState<string>(userName || "");
   const [inputPassword, setInputPassword] = useState("");
   const [displayError, setDisplayError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
+  const navigate = useNavigate();
   async function loginUser() {
     loginOrCreate(`/api/auth/login`);
   }
@@ -27,28 +30,32 @@ export function Login({
     try {
       setIsLoading(true);
       setDisplayError(null);
-      
+
       const response = await fetch(endpoint, {
         method: "post",
         body: JSON.stringify({ email: inputUserName, password: inputPassword }),
         headers: {
           "Content-type": "application/json; charset=UTF-8",
         },
-        credentials: "include" 
+        credentials: "include",
       });
-      
+
       if (response?.status === 200) {
         localStorage.setItem("userName", inputUserName);
-        onAuthChange(inputUserName, AuthState.Authenticated);
+        setUserName(inputUserName)
+        setAuthState(AuthState.Authenticated)
       } else {
         const body = await response.json();
         setDisplayError(`⚠ Error: ${body.msg}`);
       }
     } catch (error) {
       console.error("Login error:", error);
-      setDisplayError(`⚠ Error: Unable to connect to the server. Please try again later.`);
+      setDisplayError(
+        `⚠ Error: Unable to connect to the server. Please try again later.`
+      );
     } finally {
       setIsLoading(false);
+      navigate("/budget");
     }
   }
 
@@ -56,7 +63,11 @@ export function Login({
     <>
       <main className="flex flex-col pt-6 w-full justify-center">
         <h1 className="text-center">Welcome to BudgeIt</h1>
-        <form method="get" action="budget.html" onSubmit={(e) => e.preventDefault()}>
+        <form
+          method="get"
+          action="budget.html"
+          onSubmit={(e) => e.preventDefault()}
+        >
           <div className="flex w-full justify-center">
             <input
               value={inputUserName}
@@ -101,14 +112,14 @@ export function Login({
             <div className="px-6 pt-6 pb-2">
               <h3 className="text-lg font-semibold text-gray-900">Error</h3>
             </div>
-            
+
             <div className="px-6 py-4">
               <p className="text-gray-700">{displayError}</p>
             </div>
-            
+
             <div className="px-6 py-4 flex justify-end rounded-b-xl">
-              <button 
-                onClick={() => setDisplayError(null)} 
+              <button
+                onClick={() => setDisplayError(null)}
                 className="px-5 py-2.5 bg-blue-500 text-white rounded-lg font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
               >
                 Close
