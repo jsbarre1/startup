@@ -161,13 +161,22 @@ const verifyAuth = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 
-apiRouter.get("/scores", verifyAuth, (_req: Request, res: Response) => {
-  res.send(scores);
+apiRouter.get("/scores", verifyAuth, async (_req: Request, res: Response) => {
+  try {
+    const scores = await getHighScores();
+    res.send(scores);
+  } catch (error) {
+    res.status(500).send({ msg: "Error retrieving scores" });
+  }
 });
 
-apiRouter.post("/score", verifyAuth, (req: Request, res: Response) => {
-  scores = updateScores(req.body);
-  res.send(scores);
+apiRouter.post("/score", verifyAuth, async (req: Request, res: Response) => {
+  try {
+    const scores = await updateScores(req.body);
+    res.send(scores);
+  } catch (error) {
+    res.status(500).send({ msg: "Error updating score" });
+  }
 });
 
 
