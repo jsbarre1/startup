@@ -135,12 +135,16 @@ apiRouter.post("/auth/login", async (req: Request, res: Response) => {
 
 
 apiRouter.delete("/auth/logout", async (req: Request, res: Response) => {
-  const user = await findUser("token", req.cookies[authCookieName]);
-  if (user) {
-    delete user.token;
+  try {
+    const user = await findUser("token", req.cookies[authCookieName]);
+    if (user) {
+      await updateUserToken(user.email, null);
+    }
+    res.clearCookie(authCookieName);
+    res.status(204).end();
+  } catch (error) {
+    res.status(500).send({ msg: "Error during logout" });
   }
-  res.clearCookie(authCookieName);
-  res.status(204).end();
 });
 
 const verifyAuth = async (req: Request, res: Response, next: NextFunction) => {
