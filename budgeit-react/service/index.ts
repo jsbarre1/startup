@@ -116,17 +116,23 @@ apiRouter.post("/auth/create", async (req: Request, res: Response) => {
 
 
 apiRouter.post("/auth/login", async (req: Request, res: Response) => {
-  const user = await findUser("email", req.body.email);
+  try {
+    const user = await findUser("email", req.body.email);
 
-  if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
-    res.status(401).send({ msg: "Unauthorized" });
-    return;
+    if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
+      res.status(401).send({ msg: "Unauthorized" });
+      return;
+    }
+
+    const token = uuid.v4() as UUID;
+    await updateUserToken(user.email, token);
+    setAuthCookie(res, token);
+    res.send({ email: user.email });
+  } catch (error) {
+    res.status(500).send({ msg: "Error during login" });
   }
-
-  user.token = uuid.v4() as UUID;
-  setAuthCookie(res, user.token);
-  res.send({ email: user.email });
 });
+
 
 apiRouter.delete("/auth/logout", async (req: Request, res: Response) => {
   const user = await findUser("token", req.cookies[authCookieName]);
