@@ -148,13 +148,18 @@ apiRouter.delete("/auth/logout", async (req: Request, res: Response) => {
 });
 
 const verifyAuth = async (req: Request, res: Response, next: NextFunction) => {
-  const user = await findUser("token", req.cookies[authCookieName]);
-  if (user) {
-    next();
-  } else {
-    res.status(401).send({ msg: "Unauthorized" });
+  try {
+    const user = await findUser("token", req.cookies[authCookieName]);
+    if (user) {
+      next();
+    } else {
+      res.status(401).send({ msg: "Unauthorized" });
+    }
+  } catch (error) {
+    res.status(500).send({ msg: "Error verifying authentication" });
   }
 };
+
 
 apiRouter.get("/scores", verifyAuth, (_req: Request, res: Response) => {
   res.send(scores);
