@@ -93,12 +93,12 @@ async function addTransaction(transaction: Transaction): Promise<void> {
   await transactionCollection.insertOne(processedTransaction);
 }
 
-async function getTransactions(userToken: UUID): Promise<Transaction[]> {
-  const query = { userToken: userToken };
+async function getTransactions(userName: string): Promise<Transaction[]> {
+  const query = { userName: userName };
   
   const transactions = await transactionCollection.find(query).toArray();
   
-  console.log(`Found ${transactions.length} transactions for token ${userToken}`);
+  console.log(`Found ${transactions.length} transactions for user ${userName}`);
   
   return transactions;
 }
@@ -204,11 +204,17 @@ apiRouter.post("/score", verifyAuth, async (req: Request, res: Response) => {
 });
 
 apiRouter.get("/transactions", verifyAuth, async (req: Request, res: Response) => {
-  try {
-    const userToken = req.cookies[authCookieName];
-    console.log("Fetching transactions for token:", userToken);
+  try {    
+    if (!req.cookies[authCookieName]) {
+      return res.status(401).send({ msg: "Unauthorized" });
+    }
     
-    const transactions = await getTransactions(userToken);
+    const userName = req.query.userName as string;
+    if (!userName) {
+      return res.status(400).send({ msg: "userName is required" });
+    }
+    
+    const transactions = await getTransactions(userName);
     res.send(transactions);
   } catch (error) {
     console.error("Error retrieving transactions:", error);
@@ -218,13 +224,15 @@ apiRouter.get("/transactions", verifyAuth, async (req: Request, res: Response) =
 
 apiRouter.post("/transaction", verifyAuth, async (req: Request, res: Response) => {
   try {
-    const userToken = req.cookies[authCookieName];
-    console.log("Adding transaction for user token:", userToken);
+    const { userName } = req.body;
     
-    const transaction = {
-      ...req.body,
-      userToken: userToken
-    };
+    if (!userName) {
+      return res.status(400).send({ msg: "userName is required" });
+    }
+    
+    console.log("Adding transaction for user:", userName);
+    
+    const transaction = req.body;
     
     console.log("Transaction to add:", transaction);
     
@@ -235,7 +243,6 @@ apiRouter.post("/transaction", verifyAuth, async (req: Request, res: Response) =
     res.status(500).send({ msg: "Error adding transaction" });
   }
 });
-
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error("Application error:", err);
   res.status(500).send({ 

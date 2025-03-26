@@ -195,17 +195,17 @@ function addTransaction(transaction) {
         });
     });
 }
-function getTransactions(userToken) {
+function getTransactions(userName) {
     return __awaiter(this, void 0, void 0, function () {
         var query, transactions;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    query = { userToken: userToken };
+                    query = { userName: userName };
                     return [4 /*yield*/, transactionCollection.find(query).toArray()];
                 case 1:
                     transactions = _a.sent();
-                    console.log("Found ".concat(transactions.length, " transactions for token ").concat(userToken));
+                    console.log("Found ".concat(transactions.length, " transactions for user ").concat(userName));
                     return [2 /*return*/, transactions];
             }
         });
@@ -380,14 +380,19 @@ apiRouter.post("/score", verifyAuth, function (req, res) { return __awaiter(void
     });
 }); });
 apiRouter.get("/transactions", verifyAuth, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var userToken, transactions, error_7;
+    var userName, transactions, error_7;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                userToken = req.cookies[authCookieName];
-                console.log("Fetching transactions for token:", userToken);
-                return [4 /*yield*/, getTransactions(userToken)];
+                if (!req.cookies[authCookieName]) {
+                    return [2 /*return*/, res.status(401).send({ msg: "Unauthorized" })];
+                }
+                userName = req.query.userName;
+                if (!userName) {
+                    return [2 /*return*/, res.status(400).send({ msg: "userName is required" })];
+                }
+                return [4 /*yield*/, getTransactions(userName)];
             case 1:
                 transactions = _a.sent();
                 res.send(transactions);
@@ -402,14 +407,17 @@ apiRouter.get("/transactions", verifyAuth, function (req, res) { return __awaite
     });
 }); });
 apiRouter.post("/transaction", verifyAuth, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var userToken, transaction, error_8;
+    var userName, transaction, error_8;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                userToken = req.cookies[authCookieName];
-                console.log("Adding transaction for user token:", userToken);
-                transaction = __assign(__assign({}, req.body), { userToken: userToken });
+                userName = req.body.userName;
+                if (!userName) {
+                    return [2 /*return*/, res.status(400).send({ msg: "userName is required" })];
+                }
+                console.log("Adding transaction for user:", userName);
+                transaction = req.body;
                 console.log("Transaction to add:", transaction);
                 return [4 /*yield*/, addTransaction(transaction)];
             case 1:

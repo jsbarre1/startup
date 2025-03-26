@@ -35,7 +35,7 @@ interface Transaction {
   date: Date;
   amount: string;
   type: tType;
-  userName?: string;
+  userName?: string; 
 }
 
 interface PieChartData {
@@ -73,30 +73,27 @@ export function Budget({ userName }: { userName: string }) {
       try {
         setIsLoading(true);
         setError(null);
-
-        console.log("Fetching transactions...");
-        const response = await fetch("/api/transactions", {
+                
+        const response = await fetch(`/api/transactions?userName=${encodeURIComponent(userName || '')}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
-          credentials: "include",
+          credentials: "include" 
         });
-
+    
         if (!response.ok) {
-          throw new Error(
-            `Failed to fetch transactions: ${response.statusText}`
-          );
+          throw new Error(`Failed to fetch transactions: ${response.statusText}`);
         }
-
+    
         const data = await response.json();
         console.log("Received transactions:", data);
-
+        
         const processedTransactions = data.map((t: any) => ({
           ...t,
-          date: new Date(t.date),
+          date: new Date(t.date)
         }));
-
+    
         setTransactions(processedTransactions);
       } catch (err) {
         console.error("Error fetching transactions:", err);
@@ -105,9 +102,9 @@ export function Budget({ userName }: { userName: string }) {
         setIsLoading(false);
       }
     };
-
     fetchTransactions();
   }, []);
+  
   useEffect(() => {
     const expensesByType = transactions.reduce((acc, transaction) => {
       if (transaction.type === "income") return acc;
@@ -135,54 +132,46 @@ export function Budget({ userName }: { userName: string }) {
 
     try {
       setError(null);
-
-      const [year, month, day] = newTransaction.date.split("-").map(Number);
+      
+      const [year, month, day] = newTransaction.date.split('-').map(Number);
       const dateObj = new Date(year, month - 1, day);
-
+      
       const transaction = {
         date: dateObj,
         amount: newTransaction.amount,
         type: newTransaction.type,
-        userName: userName,
+        userName: userName
       };
 
       console.log("Sending transaction:", transaction);
-
+      
       const transactionResponse = await fetch("/api/transaction", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include",
-        body: JSON.stringify({
+        credentials: "include", 
+       body: JSON.stringify({
           date: dateObj,
           amount: newTransaction.amount,
           type: newTransaction.type,
-          userName: userName,
+          userName: userName
         }),
       });
 
       if (!transactionResponse.ok) {
-        console.error(
-          "Transaction response:",
-          await transactionResponse.text()
-        );
-        throw new Error(
-          `Failed to add transaction: ${transactionResponse.statusText}`
-        );
+        console.error("Transaction response:", await transactionResponse.text());
+        throw new Error(`Failed to add transaction: ${transactionResponse.statusText}`);
       }
 
       console.log("Transaction added successfully");
-
-      setTransactions([
-        ...transactions,
-        {
-          date: dateObj,
-          amount: newTransaction.amount,
-          type: newTransaction.type,
-          userName: userName,
-        },
-      ]);
+      
+      setTransactions([...transactions, {
+        date: dateObj,
+        amount: newTransaction.amount,
+        type: newTransaction.type,
+        userName: userName
+      }]);
       setNewTransaction({
         date: new Date().toISOString().split("T")[0],
         amount: "",
@@ -231,13 +220,13 @@ export function Budget({ userName }: { userName: string }) {
           MEOW! You scored 100 points!
         </Notification>
       ) : null}
-
+      
       {error && (
         <div className="bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-center">
           {error}
         </div>
       )}
-
+      
       <main className="pt-6 flex flex-col">
         <h1 className="text-center">Welcome {userName} to MyBudget!</h1>
 

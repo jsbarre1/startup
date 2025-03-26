@@ -29,5 +29,4 @@ export interface Transaction {
   amount: string;
   type: TransactionType;
   userName: string;
-  userToken?: UUID; 
 }
