@@ -68,6 +68,25 @@ async function getHighScores(): Promise<Score[]> {
   return await scoreCollection.find(query, options).toArray();
 }
 
+async function updateScores(newScore: Score): Promise<Score[]> {
+  // Find if user already has a score
+  const existingScore = await scoreCollection.findOne({ userName: newScore.userName });
+  
+  if (existingScore) {
+    // Update existing score
+    await scoreCollection.updateOne(
+      { userName: newScore.userName },
+      { $set: { score: existingScore.score + newScore.score } }
+    );
+  } else {
+    // Insert new score
+    await scoreCollection.insertOne(newScore);
+  }
+  
+  // Return top 10 scores
+  return await getHighScores();
+}
+
 
 let users: User[] = [];
 let scores: Score[] = [];
@@ -135,37 +154,6 @@ apiRouter.post("/score", verifyAuth, (req: Request, res: Response) => {
   res.send(scores);
 });
 
-
-function updateScores(newScore: Score) {
-  const existingScoreIndex = scores.findIndex(score => score.userName === newScore.userName);
-  
-  if (existingScoreIndex !== -1) {
-    scores[existingScoreIndex].score += newScore.score;
-    
-    scores.sort((a, b) => b.score - a.score);
-  } else {
-    let inserted = false;
-    
-    for (let i = 0; i < scores.length; i++) {
-      if (newScore.score > scores[i].score) {
-        scores.splice(i, 0, newScore);
-        inserted = true;
-        break;
-      }
-    }
-    
-    if (!inserted) {
-      scores.push(newScore);
-    }
-  }
-  
-  if (scores.length > 10) {
-    scores.length = 10;
-  }
-  console.log(scores);
-
-  return scores;
-}
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).send({ 
