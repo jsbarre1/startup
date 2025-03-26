@@ -35,6 +35,7 @@ interface Transaction {
   date: Date;
   amount: string;
   type: tType;
+  userName?: string;
 }
 
 interface PieChartData {
@@ -50,6 +51,8 @@ export function Budget({ userName }: { userName: string }) {
     type: "income" as tType,
   });
   const [hasScored, setHasScored] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const [pieData, setPieData] = useState<
     Array<{ name: string; value: number }>
   >([]);
@@ -65,6 +68,46 @@ export function Budget({ userName }: { userName: string }) {
     "#6B66FF",
   ];
 
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        console.log("Fetching transactions...");
+        const response = await fetch("/api/transactions", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          throw new Error(
+            `Failed to fetch transactions: ${response.statusText}`
+          );
+        }
+
+        const data = await response.json();
+        console.log("Received transactions:", data);
+
+        const processedTransactions = data.map((t: any) => ({
+          ...t,
+          date: new Date(t.date),
+        }));
+
+        setTransactions(processedTransactions);
+      } catch (err) {
+        console.error("Error fetching transactions:", err);
+        setError("Failed to load transactions. Please try again later.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
   useEffect(() => {
     const expensesByType = transactions.reduce((acc, transaction) => {
       if (transaction.type === "income") return acc;
@@ -90,24 +133,63 @@ export function Budget({ userName }: { userName: string }) {
     e.preventDefault();
     if (!newTransaction.date || !newTransaction.amount) return;
 
-    const [year, month, day] = newTransaction.date.split('-').map(Number);
-    const dateWithoutTimezoneShift = new Date(year, month - 1, day);
-    
-    const transaction: Transaction = {
-      date: dateWithoutTimezoneShift,
-      amount: newTransaction.amount,
-      type: newTransaction.type,
-    };
-
-    setTransactions([...transactions, transaction]);
-    setNewTransaction({
-      date: new Date().toISOString().split("T")[0],
-      amount: "",
-      type: "income",
-    });
-
     try {
-      const response = await fetch("/api/score", {
+      setError(null);
+
+      const [year, month, day] = newTransaction.date.split("-").map(Number);
+      const dateObj = new Date(year, month - 1, day);
+
+      const transaction = {
+        date: dateObj,
+        amount: newTransaction.amount,
+        type: newTransaction.type,
+        userName: userName,
+      };
+
+      console.log("Sending transaction:", transaction);
+
+      const transactionResponse = await fetch("/api/transaction", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          date: dateObj,
+          amount: newTransaction.amount,
+          type: newTransaction.type,
+          userName: userName,
+        }),
+      });
+
+      if (!transactionResponse.ok) {
+        console.error(
+          "Transaction response:",
+          await transactionResponse.text()
+        );
+        throw new Error(
+          `Failed to add transaction: ${transactionResponse.statusText}`
+        );
+      }
+
+      console.log("Transaction added successfully");
+
+      setTransactions([
+        ...transactions,
+        {
+          date: dateObj,
+          amount: newTransaction.amount,
+          type: newTransaction.type,
+          userName: userName,
+        },
+      ]);
+      setNewTransaction({
+        date: new Date().toISOString().split("T")[0],
+        amount: "",
+        type: "income",
+      });
+
+      const scoreResponse = await fetch("/api/score", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -118,13 +200,14 @@ export function Budget({ userName }: { userName: string }) {
         }),
       });
 
-      if (response.ok) {
+      if (scoreResponse.ok) {
         setHasScored(true);
       } else {
         console.error("Failed to update score");
       }
     } catch (error) {
-      console.error("Error updating score:", error);
+      console.error("Error adding transaction:", error);
+      setError("Failed to add transaction. Please try again.");
     }
   };
 
@@ -137,6 +220,10 @@ export function Budget({ userName }: { userName: string }) {
     return `$${value}`;
   };
 
+  if (isLoading) {
+    return <div className="text-center mt-8">Loading transactions...</div>;
+  }
+
   return (
     <>
       {hasScored ? (
@@ -144,14 +231,16 @@ export function Budget({ userName }: { userName: string }) {
           MEOW! You scored 100 points!
         </Notification>
       ) : null}
+
+      {error && (
+        <div className="bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-center">
+          {error}
+        </div>
+      )}
+
       <main className="pt-6 flex flex-col">
         <h1 className="text-center">Welcome {userName} to MyBudget!</h1>
 
-        {/* <div>
-          <button className="p-1 w-[80px] lg:w-[100px] rounded-3xl bg-blue-500 shadow-md text-white text-xs">
-            edit plan
-          </button>
-        </div> */}
         <div className="flex flex-col self-center w-full md:w-[800px] rounded-lg shadow-md text-center pt-2">
           <form onSubmit={handleAddTransaction}>
             <div className="flex flex-row ring-2 shadow-md ring-blue-400 bg-blue-400 justify-evenly rounded-xl">
@@ -281,13 +370,13 @@ export function Budget({ userName }: { userName: string }) {
                         : "bg-red-200"
                     } shadow-md rounded-2xl mt-1`}
                   >
-                    <div className=" text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">
+                    <div className="text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">
                       {transaction.date.toLocaleDateString()}
                     </div>
-                    <div className=" text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">
+                    <div className="text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">
                       {transaction.type}
                     </div>
-                    <div className=" text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">
+                    <div className="text-center rounded-2xl text-sm w-[110px] lg:w-[200px]">
                       {transaction.type === "income" ? (
                         <span>+</span>
                       ) : (

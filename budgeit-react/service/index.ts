@@ -1,4 +1,5 @@
-import { UUID, User, Score } from "./types";
+import { UUID, User, Score, Transaction } from "./types";
+import { Request, Response, NextFunction } from 'express';
 
 const express = require('express');
 const cookieParser = require('cookie-parser');
@@ -8,12 +9,12 @@ const {MongoClient} = require('mongodb')
 const config = require('./dbConfig.json')
 
 const url = `mongodb+srv://${config.username}:${config.password}@${config.hostname}`
-import { Request, Response, NextFunction } from 'express';
 
 const client = new MongoClient(url)
 const db = client.db('startup');
 const userCollection = db.collection('user');
 const scoreCollection = db.collection('score');
+const transactionCollection = db.collection('transaction');
 
 const app = express();
 
@@ -21,8 +22,9 @@ const authCookieName = "token";
 
 (async function testConnection() {
   try {
+    await client.connect(); 
     await db.command({ ping: 1 });
-    console.log(`Connect to database`);
+    console.log(`Connected to database`);
   } catch (ex) {
     console.log(`Unable to connect to database with ${url} because ${ex.message}`);
     process.exit(1);
@@ -82,19 +84,32 @@ async function updateScores(newScore: Score): Promise<Score[]> {
   return await getHighScores();
 }
 
+async function addTransaction(transaction: Transaction): Promise<void> {
+  const processedTransaction = {
+    ...transaction,
+    date: new Date(transaction.date)
+  };
+  
+  await transactionCollection.insertOne(processedTransaction);
+}
 
-let users: User[] = [];
-let scores: Score[] = [];
+async function getTransactions(userToken: UUID): Promise<Transaction[]> {
+  const query = { userToken: userToken };
+  
+  const transactions = await transactionCollection.find(query).toArray();
+  
+  console.log(`Found ${transactions.length} transactions for token ${userToken}`);
+  
+  return transactions;
+}
 
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
 
 app.use(express.json());
-
 app.use(cookieParser());
-
 app.use(express.static("public"));
 
-var apiRouter = express.Router();
+const apiRouter = express.Router();
 app.use(`/api`, apiRouter);
 
 apiRouter.post("/auth/create", async (req: Request, res: Response) => {
@@ -109,11 +124,10 @@ apiRouter.post("/auth/create", async (req: Request, res: Response) => {
       res.send({ email: user.email });
     }
   } catch (error) {
+    console.error("Error creating user:", error);
     res.status(500).send({ msg: "Error creating user" });
   }
 });
-
-
 
 apiRouter.post("/auth/login", async (req: Request, res: Response) => {
   try {
@@ -129,10 +143,10 @@ apiRouter.post("/auth/login", async (req: Request, res: Response) => {
     setAuthCookie(res, token);
     res.send({ email: user.email });
   } catch (error) {
+    console.error("Error during login:", error);
     res.status(500).send({ msg: "Error during login" });
   }
 });
-
 
 apiRouter.delete("/auth/logout", async (req: Request, res: Response) => {
   try {
@@ -143,29 +157,38 @@ apiRouter.delete("/auth/logout", async (req: Request, res: Response) => {
     res.clearCookie(authCookieName);
     res.status(204).end();
   } catch (error) {
+    console.error("Error during logout:", error);
     res.status(500).send({ msg: "Error during logout" });
   }
 });
 
 const verifyAuth = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user = await findUser("token", req.cookies[authCookieName]);
+    const token = req.cookies[authCookieName];
+    if (!token) {
+      res.status(401).send({ msg: "No authentication token" });
+      return;
+    }
+    
+    const user = await findUser("token", token);
     if (user) {
+      req.body.userToken = token;
       next();
     } else {
-      res.status(401).send({ msg: "Unauthorized" });
+      res.status(401).send({ msg: "Unauthorized - Invalid token" });
     }
   } catch (error) {
+    console.error("Error verifying authentication:", error);
     res.status(500).send({ msg: "Error verifying authentication" });
   }
 };
-
 
 apiRouter.get("/scores", verifyAuth, async (_req: Request, res: Response) => {
   try {
     const scores = await getHighScores();
     res.send(scores);
   } catch (error) {
+    console.error("Error retrieving scores:", error);
     res.status(500).send({ msg: "Error retrieving scores" });
   }
 });
@@ -175,12 +198,46 @@ apiRouter.post("/score", verifyAuth, async (req: Request, res: Response) => {
     const scores = await updateScores(req.body);
     res.send(scores);
   } catch (error) {
+    console.error("Error updating score:", error);
     res.status(500).send({ msg: "Error updating score" });
   }
 });
 
+apiRouter.get("/transactions", verifyAuth, async (req: Request, res: Response) => {
+  try {
+    const userToken = req.cookies[authCookieName];
+    console.log("Fetching transactions for token:", userToken);
+    
+    const transactions = await getTransactions(userToken);
+    res.send(transactions);
+  } catch (error) {
+    console.error("Error retrieving transactions:", error);
+    res.status(500).send({ msg: "Error retrieving transactions" });
+  }
+});
+
+apiRouter.post("/transaction", verifyAuth, async (req: Request, res: Response) => {
+  try {
+    const userToken = req.cookies[authCookieName];
+    console.log("Adding transaction for user token:", userToken);
+    
+    const transaction = {
+      ...req.body,
+      userToken: userToken
+    };
+    
+    console.log("Transaction to add:", transaction);
+    
+    await addTransaction(transaction);
+    res.send({ msg: "Transaction added successfully" });
+  } catch (error) {
+    console.error("Error adding transaction:", error);
+    res.status(500).send({ msg: "Error adding transaction" });
+  }
+});
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error("Application error:", err);
   res.status(500).send({ 
     type: err.name, 
     message: err.message 
@@ -191,10 +248,7 @@ app.use((_req: Request, res: Response) => {
   res.sendFile("index.html", { root: "public" });
 });
 
-function setAuthCookie(
-  res: Response,
-  authToken: UUID | undefined
-) {
+function setAuthCookie(res: Response, authToken: UUID | undefined) {
   if (authToken) {
     res.cookie(authCookieName, authToken, {
       secure: true,
@@ -203,8 +257,6 @@ function setAuthCookie(
     });
   }
 }
-
-
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
