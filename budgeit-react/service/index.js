@@ -40,9 +40,83 @@ var express = require('express');
 var cookieParser = require('cookie-parser');
 var bcrypt = require('bcryptjs');
 var uuid = require('uuid');
-// Create Express app with proper type
+var MongoClient = require('mongodb').MongoClient;
+var config = require('./dbConfig.json');
+var url = "mongodb+srv://".concat(config.username, ":").concat(config.password, "@").concat(config.hostname);
+var client = new MongoClient(url);
+var db = client.db('startup');
+var userCollection = db.collection('user');
+var scoreCollection = db.collection('score');
 var app = express();
 var authCookieName = "token";
+(function testConnection() {
+    return __awaiter(this, void 0, void 0, function () {
+        var ex_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, db.command({ ping: 1 })];
+                case 1:
+                    _a.sent();
+                    console.log("Connect to database");
+                    return [3 /*break*/, 3];
+                case 2:
+                    ex_1 = _a.sent();
+                    console.log("Unable to connect to database with ".concat(url, " because ").concat(ex_1.message));
+                    process.exit(1);
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    });
+})();
+function getUser(email) {
+    return userCollection.findOne({ email: email });
+}
+function getUserByToken(token) {
+    return userCollection.findOne({ token: token });
+}
+function addUser(user) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, userCollection.insertOne(user)];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+function updateUser(user) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, userCollection.updateOne({ email: user.email }, { $set: user })];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+function addScore(score) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            return [2 /*return*/, scoreCollection.insertOne(score)];
+        });
+    });
+}
+function getHighScores() {
+    var query = { score: { $gt: 0, $lt: 900 } };
+    var options = {
+        sort: { score: -1 },
+        limit: 10,
+    };
+    var cursor = scoreCollection.find(query, options);
+    return cursor.toArray();
+}
 var users = [];
 var scores = [];
 var port = process.argv.length > 2 ? process.argv[2] : 4000;

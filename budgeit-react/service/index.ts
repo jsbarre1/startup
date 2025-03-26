@@ -11,11 +11,53 @@ const url = `mongodb+srv://${config.username}:${config.password}@${config.hostna
 import { Request, Response, NextFunction } from 'express';
 
 const client = new MongoClient(url)
-const db = client.db('')
+const db = client.db('startup');
+const userCollection = db.collection('user');
+const scoreCollection = db.collection('score');
+
 const app = express();
 
 const authCookieName = "token";
 
+(async function testConnection() {
+  try {
+    await db.command({ ping: 1 });
+    console.log(`Connect to database`);
+  } catch (ex) {
+    console.log(`Unable to connect to database with ${url} because ${ex.message}`);
+    process.exit(1);
+  }
+})();
+
+function getUser(email: string) {
+  return userCollection.findOne({ email: email });
+}
+
+function getUserByToken(token: UUID) {
+  return userCollection.findOne({ token: token });
+}
+
+async function addUser(user: User) {
+  await userCollection.insertOne(user);
+}
+
+async function updateUser(user: User) {
+  await userCollection.updateOne({ email: user.email }, { $set: user });
+}
+
+async function addScore(score: Score) {
+  return scoreCollection.insertOne(score);
+}
+
+function getHighScores() {
+  const query = { score: { $gt: 0, $lt: 900 } };
+  const options = {
+    sort: { score: -1 },
+    limit: 10,
+  };
+  const cursor = scoreCollection.find(query, options);
+  return cursor.toArray();
+}
 
 let users: User[] = [];
 let scores: Score[] = [];
