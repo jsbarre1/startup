@@ -121,3 +121,6 @@ In react part two I learned a lot about state and how we can use different hooks
 
 ## Startup Service
 I learned a lot in this part of the project. Mainly how a backend works. I enjoyed setting up different endpoints and manipulating the data stored in the backend. I also learned how to call those endpoints with fetch functions. It was also fun to hit the 3rd party api as I am hitting a random cat image api. 
+
+## MongoDB
+This was a really fun part of the project for me. I really enjoyed how it came together and how it actually stores the user's information now. I learned about json based databases and about how to query said database.
