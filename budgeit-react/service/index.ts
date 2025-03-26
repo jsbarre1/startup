@@ -58,7 +58,6 @@ async function updateUserToken(email: string, token: UUID | null) {
   }
 }
 
-// MongoDB score operations
 async function getHighScores(): Promise<Score[]> {
   const query = { score: { $gt: 0, $lt: 900 } };
   const options = {
@@ -69,21 +68,17 @@ async function getHighScores(): Promise<Score[]> {
 }
 
 async function updateScores(newScore: Score): Promise<Score[]> {
-  // Find if user already has a score
   const existingScore = await scoreCollection.findOne({ userName: newScore.userName });
   
   if (existingScore) {
-    // Update existing score
     await scoreCollection.updateOne(
       { userName: newScore.userName },
       { $set: { score: existingScore.score + newScore.score } }
     );
   } else {
-    // Insert new score
     await scoreCollection.insertOne(newScore);
   }
   
-  // Return top 10 scores
   return await getHighScores();
 }
 
@@ -103,12 +98,18 @@ var apiRouter = express.Router();
 app.use(`/api`, apiRouter);
 
 apiRouter.post("/auth/create", async (req: Request, res: Response) => {
-  if (await findUser("email", req.body.email)) {
-    res.status(409).send({ msg: "Existing user" });
-  } else {
-    const user = await createUser(req.body.email, req.body.password);
-    setAuthCookie(res, user.token);
-    res.send({ email: user.email });
+  try {
+    const existingUser = await findUser("email", req.body.email);
+    
+    if (existingUser) {
+      res.status(409).send({ msg: "Existing user" });
+    } else {
+      const user = await createUser(req.body.email, req.body.password);
+      setAuthCookie(res, user.token);
+      res.send({ email: user.email });
+    }
+  } catch (error) {
+    res.status(500).send({ msg: "Error creating user" });
   }
 });
 
